@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Login } from './pages/Login';
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+function MainContent() {
+  const { signed, user, signOut } = useAuth();
+
+  if (signed) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100">
+        <h1 className="text-3xl font-bold text-emerald-600">Conectado com Sucesso! 🎉</h1>
+        <p className="mt-2 text-slate-600">Usuário ativo: <strong className="text-slate-800">{user.login}</strong></p>
+        <button 
+          onClick={signOut}
+          className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+        >
+          Sair / Logout
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    );
+  }
+
+  return <Login />;
 }
 
-export default App
+function App() {
+  return (
+    <AuthProvider>
+      <MainContent />
+    </AuthProvider>
+  );
+}
+
+export default App;
+
