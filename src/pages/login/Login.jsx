@@ -33,13 +33,17 @@ export function Login() {
         setCarregando(false);
     }
 
-
     return (
         <div className={styles.container}>
             <div className={styles.painelDireito}>
                 <div className={styles.card}>
                     <div className={styles.cardLogoSecao}>
-                        <img src={logoSias} alt="Logo SIAS Esperança" className="w-48 h-auto object-contain" />
+                        <img
+                            src={logoSias}
+                            alt="Logo SIAS Esperança"
+                            className="w-96
+                         h-auto object-contain"
+                        />
                     </div>
 
                     <div className={styles.cardFormSecao}>
