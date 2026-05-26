@@ -1,27 +1,29 @@
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Login } from "./pages/login/Login";
 
+import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
+import { SaudeDashboard } from "./pages/dashboard/SaudeDashboard";
+import { EducadorDashboard } from "./pages/dashboard/EducadorDashboard";
+import { AccessDenied } from "./components/ui/AcessDenied/AccessDenied";
+
 function MainContent() {
     const { signed, user, signOut } = useAuth();
 
-    if (signed) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100">
-                <h1 className="text-3xl font-bold text-emerald-600">Conectado com Sucesso! 🎉</h1>
-                <p className="mt-2 text-slate-600">
-                    Usuário ativo: <strong className="text-slate-800">{user.login}</strong>
-                </p>
-                <button
-                    onClick={signOut}
-                    className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                    Sair / Logout
-                </button>
-            </div>
-        );
+    console.log("Usuário logado no SIAS:", user);
+    if (!signed) {
+        return <Login />;
     }
 
-    return <Login />;
+    switch (user.perfil?.toUpperCase()) {
+        case "ROLE_ADMIN":
+            return <AdminDashboard user={user} signOut={signOut} />;
+        case "ROLE_MEDICO":
+            return <SaudeDashboard user={user} signOut={signOut} />;
+        case "ROLE_PROFESSOR":
+            return <EducadorDashboard user={user} signOut={signOut} />;
+        default:
+            return <AccessDenied login={user.login} onSignOut={signOut} />;
+    }
 }
 
 function App() {

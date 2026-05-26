@@ -27,9 +27,17 @@ export function Login() {
         }
 
         const resultado = await signIn({ login, senha });
+
         if (!resultado.success) {
-            setErro(resultado.message);
+            if (resultado.message && typeof resultado.message === "object") {
+                const mensagemLimpa =
+                    resultado.message.erro || resultado.message.data || "Erro inesperado no servidor.";
+                setErro(mensagemLimpa);
+            } else {
+                setErro(resultado.message || "Falha ao conectar com o servidor.");
+            }
         }
+
         setCarregando(false);
     }
 
