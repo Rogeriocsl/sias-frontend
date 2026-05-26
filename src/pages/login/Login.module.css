@@ -1,0 +1,98 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.card {
+    display: flex;
+    width: 100%;
+    max-width: 52rem;
+    min-height: 28rem;
+    height: max-content;
+    background-color: var(--color-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.cardLogoSecao {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 42%;
+    background-image: var(--background-image-sias-bg);
+    background-color: #f9fbf9;
+    color: var(--color-text-body);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    box-sizing: border-box;
+    border-right: 1px solid var(--color-border);
+    align-self: stretch;
+}
+
+.logoBadge {
+    display: none;
+}
+
+.cardLogoSecao h3 {
+    color: var(--color-text-strong);
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.025em;
+}
+
+.cardLogoSecao p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-top: 0.5rem;
+    line-height: 1.4;
+    max-width: 200px;
+}
+
+.cardFormSecao {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem;
+    box-sizing: border-box;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+}
+
+.senhaContainer {
+    position: relative;
+    width: 100%;
+}
+
+.botaoMostrarSenha {
+    position: absolute;
+    right: 0.75rem;
+    top: 2.1rem;
+    background: none;
+    border: none;
+    color: var(--color-brand);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 10;
+}
+
+@media (min-width: 768px) {
+    .cardLogoSecao {
+        display: flex;
+    }
+}
