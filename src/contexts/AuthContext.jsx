@@ -20,8 +20,6 @@ export function AuthProvider({ children }) {
 
     async function signIn({ login, senha }) {
         try {
-            // 🚀 TRUQUE DA BLINDAGEM: Enviamos as duas combinações de chaves.
-            // O Spring Boot vai ignorar o que não precisa e mapear o que ele espera!
             const response = await api.post("/auth/login", {
                 login: login,
                 senha: senha,
@@ -31,10 +29,12 @@ export function AuthProvider({ children }) {
 
             const token = response.data.token;
             const perfilReal = response.data.perfil;
+            const nomeReal = response.data.nome;
 
             const usuarioLogado = {
                 login: response.data.login || login,
                 perfil: perfilReal,
+                nome: nomeReal
             };
 
             setUser(usuarioLogado);
