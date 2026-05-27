@@ -12,6 +12,7 @@ import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } fr
 import styles from "./AdminDashboard.module.css";
 import logoImg from "../../assets/logoT.png";
 
+// ── Ícones do Menu ────────────────────────────────────────────────────────────
 const IconGrid = () => (
     <svg
         viewBox="0 0 24 24"
@@ -125,15 +126,21 @@ const IconLogout = () => (
         <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
 );
-
-//const IconSias = () => <img src={logoImg} alt="SIAS Logo" className={styles.logoImage} />;
+const IconTrendUp = () => (
+    <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5}>
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+        <polyline points="17 6 23 6 23 12"></polyline>
+    </svg>
+);
 
 export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
         <div className={styles.layout}>
-            <Sidebar defaultCollapsed={false}>
+            {/* ── Menu Lateral (Sidebar) ── */}
+            <Sidebar collapsed={isCollapsed} onCollapsedChange={setIsCollapsed}>
                 <SidebarNav>
                     <SidebarSection label="Principal">
                         <SidebarItem
@@ -184,11 +191,19 @@ export function AdminDashboard({ user, signOut }) {
                 <SidebarFooter>
                     <Menu placement="top-start">
                         <MenuTrigger showChevron={false}>
-                            <div className={styles.userTrigger}>
-                                <span className={styles.avatar}>{(user?.login?.[0] || "U").toUpperCase()}</span>
-                                <span className={styles.userInfo}>
-                                    <span className={styles.userName}>{user?.login || "Usuário"}</span>
+                            <div className={`${styles.userTrigger} ${isCollapsed ? styles.collapsedTrigger : ""}`}>
+                                <span className={styles.avatar}>
+                                    {(user?.nome?.[0] || user?.login?.[0] || "U").toUpperCase()}
                                 </span>
+                                {/* 🛠️ SEGREDO DO MISTÉRIO: Se fechar a barra, destrói o texto do DOM na hora */}
+                                {!isCollapsed && (
+                                    <span className={styles.userInfo}>
+                                        <span className={styles.userName}>
+                                            {user?.nome || user?.login || "Usuário"}
+                                        </span>
+                                        <span className={styles.userRole}>Administrador</span>
+                                    </span>
+                                )}
                             </div>
                         </MenuTrigger>
 
@@ -196,9 +211,7 @@ export function AdminDashboard({ user, signOut }) {
                             <MenuLabel>Minha Conta</MenuLabel>
                             <MenuItem icon={<IconUser />}>Perfil</MenuItem>
                             <MenuItem icon={<IconSettings />}>Preferências</MenuItem>
-
                             <MenuSeparator />
-
                             <MenuItem icon={<IconLogout />} danger onClick={signOut}>
                                 Sair do Sistema
                             </MenuItem>
@@ -207,20 +220,126 @@ export function AdminDashboard({ user, signOut }) {
                 </SidebarFooter>
             </Sidebar>
 
+            {/* ── Área Direita de Conteúdo Reativo ── */}
             <div className={styles.main}>
                 <header className={styles.topbar}>
                     <div>
-                        <h1 className={styles.pageTitle}>SIAS - SISTEMA INTEGRADO A ACADEMIA SAUDE </h1>
+                        <h1 className={styles.pageTitle}>Painel Administrativo ⚙️</h1>
                         <p className={styles.pageSubtitle}>
-                            Bem-vindo, <strong>{user?.nome || "Usuário"}</strong>
+                            Bem-vindo, <strong>{user?.nome || user?.login || "Usuário"}</strong>
                         </p>
                     </div>
                 </header>
 
                 <div className={styles.content}>
-                    <p className={styles.placeholder}>
-                        Página: <strong>{activePage}</strong>
-                    </p>
+                    {activePage === "dashboard" && (
+                        <div className={styles.container}>
+                            {/* Grid de Métricas */}
+                            <div className={styles.metricsGrid}>
+                                <div className={styles.card}>
+                                    <div className={styles.cardHeader}>
+                                        <span className={styles.cardTitle}>Total de Usuários</span>
+                                        <span className={`${styles.badge} ${styles.badgeSuccess}`}>
+                                            <IconTrendUp /> +12%
+                                        </span>
+                                    </div>
+                                    <div className={styles.cardValue}>148</div>
+                                    <p className={styles.cardSub}>Profissionais cadastrados</p>
+                                </div>
+
+                                <div className={styles.card}>
+                                    <div className={styles.cardHeader}>
+                                        <span className={styles.cardTitle}>Médicos Ativos</span>
+                                    </div>
+                                    <div className={styles.cardValue}>42</div>
+                                    <p className={styles.cardSub}>Módulo Saúde integrado</p>
+                                </div>
+
+                                <div className={styles.card}>
+                                    <div className={styles.cardHeader}>
+                                        <span className={styles.cardTitle}>Educadores Físicos</span>
+                                    </div>
+                                    <div className={styles.cardValue}>56</div>
+                                    <p className={styles.cardSub}>Acompanhamento comunitário</p>
+                                </div>
+
+                                <div className={styles.card}>
+                                    <div className={styles.cardHeader}>
+                                        <span className={styles.cardTitle}>Encaminhamentos</span>
+                                    </div>
+                                    <div className={styles.cardValue}>1,240</div>
+                                    <p className={styles.cardSub}>Pontes de dados geradas</p>
+                                </div>
+                            </div>
+
+                            {/* Tabela de Registros */}
+                            <div className={styles.tableSection}>
+                                <h3 className={styles.sectionTitle}>Últimos Usuários Cadastrados</h3>
+                                <div className={styles.tableWrapper}>
+                                    <table className={styles.table}>
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>E-mail / Login</th>
+                                                <th>Perfil de Acesso</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <strong>Dr. Alexandre Souza</strong>
+                                                </td>
+                                                <td>alexandre.med@sias.com</td>
+                                                <td>
+                                                    <span className={`${styles.roleBadge} ${styles.roleMedico}`}>
+                                                        MÉDICO
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className={styles.statusActive}>Ativo</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Profª Roberta Lima</strong>
+                                                </td>
+                                                <td>roberta.fit@sias.com</td>
+                                                <td>
+                                                    <span className={`${styles.roleBadge} ${styles.roleProfessor}`}>
+                                                        EDUCADOR
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className={styles.statusActive}>Ativo</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Sias Gestor</strong>
+                                                </td>
+                                                <td>sias@admin.com</td>
+                                                <td>
+                                                    <span className={`${styles.roleBadge} ${styles.roleAdmin}`}>
+                                                        ADMIN
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className={styles.statusActive}>Ativo</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activePage !== "dashboard" && (
+                        <div className={styles.placeholder}>
+                            Página: <strong>{activePage}</strong>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
