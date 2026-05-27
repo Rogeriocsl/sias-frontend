@@ -1,10 +1,10 @@
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Login } from "./pages/login/Login";
 
-import { AdminDashboard } from "./pages/dashboard/AdminDashboard";
-import { SaudeDashboard } from "./pages/dashboard/SaudeDashboard";
-import { EducadorDashboard } from "./pages/dashboard/EducadorDashboard";
-import { AccessDenied } from "./components/ui/AcessDenied/AccessDenied";
+import { AdminDashboard } from "./pages/dashboard/adminDashboard/AdminDashboard";
+import { SaudeDashboard } from "./pages/dashboard/saudeDashboard/SaudeDashboard";
+import { EducadorDashboard } from "./pages/dashboard/educadorDashboard/EducadorDashboard";
+import { AccessDenied } from "./components/AcessDenied/AccessDenied";
 
 function MainContent() {
     const { signed, user, signOut } = useAuth();
