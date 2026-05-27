@@ -52,7 +52,6 @@
     transform-origin: var(--menu-origin, top left);
 }
 
-/* ── Posicionamentos Absolutos via Atributo de Dados ── */
 .list[data-placement="bottom-start"] {
     top: calc(100% + 6px);
     left: 0;
