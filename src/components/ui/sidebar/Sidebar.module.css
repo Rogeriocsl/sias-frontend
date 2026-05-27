@@ -2,11 +2,11 @@
     --sb-width: 240px;
     --sb-collapsed-width: 60px;
 
-    --sb-bg: #0f172a;
-    --sb-border: #1e293b;
-    --sb-text: #94a3b8;
-    --sb-text-active: #f1f5f9;
-    --sb-accent: #6366f1;
+    --sb-bg: (--background-image-sias-bg);
+    --sb-border: #e2e8f0;
+    --sb-text: #008da5;
+    --sb-text-active: #005b94;
+    --sb-accent: #008da5;
     --sb-accent-bg: rgba(99, 102, 241, 0.12);
     --sb-hover-bg: rgba(255, 255, 255, 0.05);
     --sb-section-label: #475569;

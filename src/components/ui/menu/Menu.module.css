@@ -3,16 +3,16 @@
     display: inline-block;
     font-family: var(--font-family, sans-serif);
 
-    --menu-bg: #1e293b; 
-    --menu-border: #334155;
-    --menu-item-color: #94a3b8;
-    --menu-item-hover-bg: #293548;
-    --menu-item-hover-color: #f1f5f9;
+    --menu-bg: (--background-image-sias-bg);
+    --menu-border: #e2e8f0;
+    --menu-item-color: #005b94;
+    --menu-item-hover-bg: (--background-image-sias-bg);
+    --menu-item-hover-color: #008da5;
     --menu-accent: #6366f1;
-    --menu-separator-color: #334155;
+    --menu-separator-color: #008da5;
     --menu-section-label-color: #475569;
     --menu-shortcut-color: #64748b;
-    --menu-danger-color: #f87171; 
+    --menu-danger-color: #f87171;
     --menu-danger-hover-bg: rgba(248, 113, 113, 0.08);
 }
 
