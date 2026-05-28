@@ -9,6 +9,8 @@ import {
 } from "../../../components/sidebar/Sidebar";
 import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "../../../components/menu/Menu";
 import styles from "./AdminDashboard.module.css";
+import { Usuarios } from "../../../pages/usuarios/Usuarios";
+import { Pacientes } from "../../../pages/pacientes/Pacientes";
 
 const IconGrid = () => (
     <svg
@@ -148,11 +150,17 @@ export function AdminDashboard({ user, signOut }) {
                         </SidebarItem>
                         <SidebarItem
                             icon={<IconUsers />}
-                            active={activePage === "usuarios"}
-                            badge={3}
+                            active={activePage === "usuarios" || activePage === "usuarios-cadastro"}
                             onClick={() => setActivePage("usuarios")}
                         >
-                            Usuários
+                            Cadastro De Usuários
+                        </SidebarItem>
+                        <SidebarItem
+                            icon={<IconUsers />}
+                            active={activePage === "pacientes" || activePage === "pacientes-cadastro"}
+                            onClick={() => setActivePage("pacientes")}
+                        >
+                            Cadastro De Pacientes
                         </SidebarItem>
                         <SidebarItem
                             icon={<IconFileText />}
@@ -228,7 +236,6 @@ export function AdminDashboard({ user, signOut }) {
                 <div className={styles.content}>
                     {activePage === "dashboard" && (
                         <div className={styles.container}>
-                            {/* Grid de Métricas */}
                             <div className={styles.metricsGrid}>
                                 <div className={styles.card}>
                                     <div className={styles.cardHeader}>
@@ -265,75 +272,15 @@ export function AdminDashboard({ user, signOut }) {
                                     <p className={styles.cardSub}>Pontes de dados geradas</p>
                                 </div>
                             </div>
-
-                            {/* Tabela de Registros */}
-                            <div className={styles.tableSection}>
-                                <h3 className={styles.sectionTitle}>Últimos Usuários Cadastrados</h3>
-                                <div className={styles.tableWrapper}>
-                                    <table className={styles.table}>
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>E-mail / Login</th>
-                                                <th>Perfil de Acesso</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <strong>Dr. Alexandre Souza</strong>
-                                                </td>
-                                                <td>alexandre.med@sias.com</td>
-                                                <td>
-                                                    <span className={`${styles.roleBadge} ${styles.roleMedico}`}>
-                                                        MÉDICO
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={styles.statusActive}>Ativo</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <strong>Profª Roberta Lima</strong>
-                                                </td>
-                                                <td>roberta.fit@sias.com</td>
-                                                <td>
-                                                    <span className={`${styles.roleBadge} ${styles.roleProfessor}`}>
-                                                        EDUCADOR
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={styles.statusActive}>Ativo</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <strong>Sias Gestor</strong>
-                                                </td>
-                                                <td>sias@admin.com</td>
-                                                <td>
-                                                    <span className={`${styles.roleBadge} ${styles.roleAdmin}`}>
-                                                        ADMIN
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={styles.statusActive}>Ativo</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
                     )}
 
-                    {activePage !== "dashboard" && (
-                        <div className={styles.placeholder}>
-                            Página: <strong>{activePage}</strong>
-                        </div>
-                    )}
+                    {activePage === "usuarios" && <Usuarios />}
+                    {activePage === "pacientes" && <Pacientes />}
+
+                    {activePage === "relatorios" && <div className={styles.placeholder}>Tela de Relatórios</div>}
+                    {activePage === "notificacoes" && <div className={styles.placeholder}>Tela de Notificações</div>}
+                    {activePage === "configuracoes" && <div className={styles.placeholder}>Tela de Configurações</div>}
                 </div>
             </div>
         </div>
