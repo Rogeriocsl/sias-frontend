@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
 import styles from "./Pacientes.module.css";
+import { ConfirmModal } from "../../components/modal/ConfirmModal";
 
 const IconUserPlus = () => (
     <svg
@@ -56,6 +57,8 @@ export function Pacientes() {
     const [pacientes, setPacientes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [pacienteSelecionadoId, setPacienteSelecionadoId] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [idParaDeletar, setIdParaDeletar] = useState(null);
 
     const carregarPacientes = () => {
         setLoading(true);
@@ -88,6 +91,23 @@ export function Pacientes() {
         }
     };
 
+    const handleDispararExclusao = (id) => {
+        setIdParaDeletar(id);
+        setModalOpen(true);
+    };
+
+    const handleConfirmarExclusao = async () => {
+        try {
+            await api.delete(`/api/pacientes/${idParaDeletar}`);
+            carregarPacientes(); // Atualiza a tabela
+        } catch (err) {
+            alert("Erro ao remover o paciente.");
+        } finally {
+            setModalOpen(false); // Fecha o modal
+            setIdParaDeletar(null);
+        }
+    };
+
     if (view === "cadastro") {
         return <PacienteForm pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
     }
@@ -107,7 +127,6 @@ export function Pacientes() {
                 </button>
             </div>
 
-            {/* Tabela de Dados */}
             <div className={styles.tableCard}>
                 {loading ? (
                     <div className={styles.feedback}>Buscando registros na base do SIAS...</div>
@@ -167,7 +186,7 @@ export function Pacientes() {
                                                 </button>
                                                 <button
                                                     className={styles.btnDelete}
-                                                    onClick={() => handleDeletar(pac.id)}
+                                                    onClick={() => handleDispararExclusao(pac.id)}
                                                     title="Remover Registro"
                                                 >
                                                     <IconTrash />
@@ -181,6 +200,14 @@ export function Pacientes() {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={modalOpen}
+                title="Remover Prontuário Clínico ⚠️"
+                message="Tem certeza que deseja remover este paciente? Esta ação é irreversível e apagará todo o histórico de consultas e avaliações físicas no SIAS."
+                onConfirm={handleConfirmarExclusao}
+                onCancel={() => setModalOpen(false)}
+            />
         </div>
     );
 }
