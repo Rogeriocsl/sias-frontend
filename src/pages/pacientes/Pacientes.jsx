@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
+import { PacienteDetalhes } from "./PacientesDetalhes";
 import styles from "./Pacientes.module.css";
+
 
 const IconUserPlus = () => (
     <svg
@@ -77,6 +79,11 @@ export function Pacientes() {
         setView("cadastro");
     };
 
+    const handleDetalhes = (id) => {
+        setPacienteSelecionadoId(id);
+        setView("detalhes");
+    };
+
     const handleDeletar = async (id) => {
         if (window.confirm("Deseja realmente remover o prontuário deste paciente do SIAS?")) {
             try {
@@ -87,6 +94,15 @@ export function Pacientes() {
             }
         }
     };
+
+    if (view === "detalhes") {
+        return (
+            <PacienteDetalhes
+                pacienteId={pacienteSelecionadoId}
+                onVoltar={() => setView("lista")}
+            />
+        );
+    }
 
     if (view === "cadastro") {
         return <PacienteForm pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
@@ -161,10 +177,20 @@ export function Pacientes() {
                                                 <button
                                                     className={styles.btnEdit}
                                                     onClick={() => handleEditar(pac.id)}
-                                                    title="Editar Paciente"
+                                                    title="Ver detalhes"
+                                                >
+                                                    Detalhes
+                                                </button>
+
+                                                <button
+                                                   className={styles.btnEdit}
+                                                   onClick={() => handleEditar(pac.id)}
+                                                   title="Editar Paciente"
+
                                                 >
                                                     <IconEdit />
                                                 </button>
+                                                
                                                 <button
                                                     className={styles.btnDelete}
                                                     onClick={() => handleDeletar(pac.id)}
