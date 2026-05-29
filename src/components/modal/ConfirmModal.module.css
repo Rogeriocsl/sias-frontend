@@ -91,7 +91,6 @@
     background-color: #dc2626;
 }
 
-/* Animais de Entrada */
 @keyframes fadeIn {
     from {
         opacity: 0;

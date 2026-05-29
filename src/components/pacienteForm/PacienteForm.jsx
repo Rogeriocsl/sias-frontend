@@ -18,7 +18,8 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
 
     const [unidades, setUnidades] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [error, setError] = useState(""); 
+    const [erros, setErros] = useState({}); 
 
     useEffect(() => {
         const carregarDadosIniciais = async () => {
@@ -26,7 +27,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             setError("");
             try {
                 const resUnidades = await api.get("/api/unidade");
-
                 setUnidades(resUnidades.data);
 
                 if (isEdit) {
@@ -54,9 +54,70 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
 
         carregarDadosIniciais();
     }, [pacienteId, isEdit]);
+
+    const validarCampo = (name, value) => {
+        let erroMensagem = "";
+
+        if (name === "nome") {
+            if (!value.trim()) erroMensagem = "O nome completo é obrigatório.";
+            else if (value.trim().split(" ").length < 2) erroMensagem = "Por favor, insira o nome e o sobrenome.";
+        }
+
+        if (name === "cpf") {
+            const numerosCpf = value.replace(/\D/g, "");
+            if (!numerosCpf) erroMensagem = "O CPF é obrigatório.";
+            else if (numerosCpf.length !== 11) erroMensagem = "O CPF deve conter exatamente 11 dígitos.";
+            else if (/^(\d)\1{10}$/.test(numerosCpf)) erroMensagem = "CPF inválido.";
+        }
+
+        if (name === "dataNascimento") {
+            if (!value) erroMensagem = "A data de nascimento é obrigatória.";
+            else {
+                const dataSelecionada = new Date(value);
+                const hoje = new Date();
+                if (dataSelecionada > hoje) erroMensagem = "A data de nascimento não pode ser futura.";
+            }
+        }
+
+        if (name === "telefone") {
+            const numerosTel = value.replace(/\D/g, "");
+            if (!numerosTel) erroMensagem = "O telefone é obrigatório.";
+            else if (numerosTel.length < 10 || numerosTel.length > 11) {
+                erroMensagem = "O telefone deve conter 10 (Fixo) ou 11 (Celular) dígitos com DDD.";
+            }
+        }
+
+        setErros((prev) => ({ ...prev, [name]: erroMensagem }));
+        return erroMensagem === "";
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        let valorComMascara = value;
+
+        if (name === "cpf") {
+            valorComMascara = value
+                .replace(/\D/g, "")
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        } else if (name === "telefone") {
+            valorComMascara = value
+                .replace(/\D/g, "")
+                .replace(/^(\d{2})(\d)/g, "($1) $2")
+                .replace(/(\d)(\d{4})$/, "$1-$2");
+        }
+
+        setFormData((prev) => ({ ...prev, [name]: valorComMascara }));
+
+        if (erros[name]) {
+            validarCampo(name, valorComMascara);
+        }
+    };
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        validarCampo(name, value);
     };
 
     const handleCheckboxChange = (enumValue) => {
@@ -71,6 +132,17 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const nomeValido = validarCampo("nome", formData.nome);
+        const cpfValido = validarCampo("cpf", formData.cpf);
+        const dataValida = validarCampo("dataNascimento", formData.dataNascimento);
+        const telValido = validarCampo("telefone", formData.telefone);
+
+        if (!nomeValido || !cpfValido || !dataValida || !telValido) {
+            setError("Por favor, corrija os erros nos campos sinalizados em vermelho.");
+            return;
+        }
+
         setLoading(true);
         setError("");
 
@@ -120,10 +192,12 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                         name="nome"
                         value={formData.nome}
                         onChange={handleChange}
-                        className={styles.input}
+                        onBlur={handleBlur}
+                        className={`${styles.input} ${erros.nome ? styles.inputErro : ""}`}
                         required
                         placeholder="Ex: Maria José da Silva"
                     />
+                    {erros.nome && <span className={styles.erroTexto}>{erros.nome}</span>}
                 </div>
 
                 {/* Linha 2: CPF e Data de Nascimento */}
@@ -138,11 +212,13 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             name="cpf"
                             value={formData.cpf}
                             onChange={handleChange}
-                            className={styles.input}
+                            onBlur={handleBlur}
+                            className={`${styles.input} ${erros.cpf ? styles.inputErro : ""}`}
                             required
-                            maxLength={11}
-                            placeholder="Ex: 12345678901"
+                            maxLength={14} // Aumentado para suportar a máscara visual de pontos/hífen
+                            placeholder="Ex: 123.456.789-01"
                         />
+                        {erros.cpf && <span className={styles.erroTexto}>{erros.cpf}</span>}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -155,9 +231,11 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             name="dataNascimento"
                             value={formData.dataNascimento}
                             onChange={handleChange}
-                            className={styles.input}
+                            onBlur={handleBlur}
+                            className={`${styles.input} ${erros.dataNascimento ? styles.inputErro : ""}`}
                             required
                         />
+                        {erros.dataNascimento && <span className={styles.erroTexto}>{erros.dataNascimento}</span>}
                     </div>
                 </div>
 
@@ -172,10 +250,12 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             name="telefone"
                             value={formData.telefone}
                             onChange={handleChange}
-                            className={styles.input}
+                            onBlur={handleBlur}
+                            className={`${styles.input} ${erros.telefone ? styles.inputErro : ""}`}
                             required
-                            placeholder="Ex: 83999887766"
+                            placeholder="Ex: (83) 99988-7766"
                         />
+                        {erros.telefone && <span className={styles.erroTexto}>{erros.telefone}</span>}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -268,6 +348,7 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                     </div>
                 </div>
 
+                {/* Ações */}
                 <div className={styles.actions}>
                     <button type="button" onClick={onVoltar} className={styles.btnCancel} disabled={loading}>
                         Cancelar
