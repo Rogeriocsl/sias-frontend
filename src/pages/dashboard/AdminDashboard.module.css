@@ -280,3 +280,10 @@
         transform: translateY(0);
     }
 }
+
+/* Tela das Turmas */
+.statusGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}

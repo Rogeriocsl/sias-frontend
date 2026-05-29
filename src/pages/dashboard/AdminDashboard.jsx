@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Sidebar,
     SidebarHeader,
@@ -136,6 +136,18 @@ const IconTrendUp = () => (
 export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [selectedTurmas, setSelectedTurmas] = useState(null);
+    const [turmas, setTurmas] = useState([]);
+
+    const pacientes = [
+        {id: 1, nome: "Junior"},
+        {id: 2, nome: "Vitor"},
+        {id: 3, nome: "Xico"},
+    ];
+
+    useEffect(() => {
+        // Api vai ser aqui
+    }, []);
 
     return (
         <div className={styles.layout}>
@@ -346,20 +358,92 @@ export function AdminDashboard({ user, signOut }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
+                                            <tr onClick={() => {
+                                                setSelectedTurmas({
+                                                    nome: "Turma da Tarde",
+                                                    educador: "Profª Laila Maria",
+                                                    quantidadeAlunos: 23
+                                                })
+                                                setActivePage("turma");
+                                                }}>
                                                 <td>
                                                     <strong>Turma da Tarde</strong>
                                                 </td>
-                                                <td>Profª Lirian Maria</td>
+                                                <td>Profª Laila Maria</td>
                                                 <td>23</td>
                                             </tr>
-                                            <tr>
+                                            <tr onClick={() => {
+                                                setSelectedTurmas({
+                                                    nome: "Turma da Manhã",
+                                                    educador: "Profº João Pedro",
+                                                    quantidadeAlunos: 27
+                                                })
+                                                setActivePage("turma");
+                                                }}>
                                                 <td>
                                                     <strong>Turma da Manhâ</strong>
                                                 </td>
                                                 <td>Profº João Pedro</td>
                                                 <td>27</td>
                                             </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activePage === "turma" && (
+                        <div>
+                            <button onClick={() => setActivePage("dashboard")}>Voltar</button>
+                            <div className={styles.tableSection}>
+                                <h3 className={styles.sectionTitle}>{selectedTurmas.nome}</h3>
+                                <div className={styles.tableWrapper}>
+                                    <table className={styles.table}>
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Gênero</th>
+                                                <th>CPF</th>
+                                                <th>Presença</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {pacientes.map((paciente) => (
+                                                <tr key={paciente.id}>
+                                                    <td>{paciente.nome}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <div className={styles.statusGroup}>
+                                                            <label>
+                                                                <input 
+                                                                    type="radio"
+                                                                    name={`presenca-${paciente.id}`}
+                                                                    value="PRESENTE"
+                                                                />
+                                                                Presente
+                                                            </label>
+                                                            <label>
+                                                                <input 
+                                                                    type="radio"
+                                                                    name={`presenca-${paciente.id}`}
+                                                                    value="FALTA"
+                                                                />
+                                                                Falta
+                                                            </label>
+                                                            <label>
+                                                                <input 
+                                                                    type="radio"
+                                                                    name={`presenca-${paciente.id}`}
+                                                                    value="JUSTIFICADA"
+                                                                />
+                                                                Falta Justificada
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
