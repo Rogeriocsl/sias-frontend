@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
-import { PacienteDetalhes } from "./PacientesDetalhes";
+import { PacienteDetalhes } from "./PacienteDetalhes";
 import styles from "./Pacientes.module.css";
 
 
