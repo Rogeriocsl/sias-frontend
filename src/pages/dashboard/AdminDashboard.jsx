@@ -333,6 +333,7 @@ export function AdminDashboard({ user, signOut }) {
                                 </div>
                             </div>
 
+                            {/* Tabela de Turmas */}
                             <div className={styles.tableSection}>
                                 <h3 className={styles.sectionTitle}>Turmas Cadastrdas</h3>
                                 <div className={styles.tableWrapper}>
