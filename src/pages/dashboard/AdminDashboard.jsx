@@ -332,6 +332,37 @@ export function AdminDashboard({ user, signOut }) {
                                     </table>
                                 </div>
                             </div>
+
+                            <div className={styles.tableSection}>
+                                <h3 className={styles.sectionTitle}>Turmas Cadastrdas</h3>
+                                <div className={styles.tableWrapper}>
+                                    <table className={styles.table}>
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Educador</th>
+                                                <th>Quantidade de Alunos</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <strong>Turma da Tarde</strong>
+                                                </td>
+                                                <td>Profª Lirian Maria</td>
+                                                <td>23</td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Turma da Manhâ</strong>
+                                                </td>
+                                                <td>Profº João Pedro</td>
+                                                <td>27</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     )}
 
