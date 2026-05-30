@@ -306,3 +306,37 @@
     flex-direction: column;
     gap: 6px;
 }
+
+.actionButtons {
+    display: flex;
+    gap: 12px;
+    margin: 15px 0 20px 0;
+}
+
+.backButton,
+.saveButton {
+    border: none;
+    border-radius: 12px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.backButton {
+    background: #e5e7eb;
+    color: #334155;
+}
+
+.backButton:hover {
+    background: #d1d5db;
+}
+
+.saveButton {
+    background: #008da5;
+    color: white;
+}
+
+.saveButton:hover {
+    background: #005b94;
+}

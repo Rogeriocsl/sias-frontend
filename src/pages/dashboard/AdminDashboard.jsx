@@ -190,6 +190,22 @@ export function AdminDashboard({ user, signOut }) {
         }
     }
 
+    async function carregandoPacienteDasTurmas(turmaId) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/pacientes/turmas/${turmaId}`);
+
+            if (!response.ok) {
+                throw new Error("Erro ao buscar pacientes");
+            }
+
+            const data = await response.json();
+            console.log("Pacientes:", data);
+            setPacientes(data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <div className={styles.layout}>
             {/* ── Menu Lateral (Sidebar) ── */}
@@ -287,6 +303,7 @@ export function AdminDashboard({ user, signOut }) {
                 <div className={styles.content}>
                     {activePage === "dashboard" && (
                         <div className={styles.container}>
+                            {/* Grid das Turmas */}
                             <h2 className={styles.classTitle}>Turmas</h2>
                             {loading ? (
                                 <p>Carregando turmas...</p>
@@ -298,12 +315,12 @@ export function AdminDashboard({ user, signOut }) {
                                             className={styles.card}
                                             onClick={() => {
                                                 setSelectedTurma(turma);
+                                                carregandoPacienteDasTurmas(turma.id);
                                                 setActivePage("turma");
                                             }}
                                         >
                                             <span className={styles.classCardTitle}>{turma.nome}</span>
                                             <span className={styles.classSub}>{turma.educador}</span>
-
                                         </div>
                                     ))}
                                 </div>
@@ -410,9 +427,9 @@ export function AdminDashboard({ user, signOut }) {
                         </div>
                     )}
 
+                    {/* Página das turmas */}
                     {activePage === "turma" && (
                         <div>
-                            <button onClick={() => setActivePage("dashboard")}>Voltar</button>
                             <div className={styles.tableSection}>
                                 <h3 className={styles.sectionTitle}>{selectedTurma.nome}</h3>
                                 <div className={styles.tableWrapper}>
@@ -428,9 +445,9 @@ export function AdminDashboard({ user, signOut }) {
                                         <tbody>
                                             {pacientes.map((paciente) => (
                                                 <tr key={paciente.id}>
-                                                    <td>{paciente.nome}</td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td><strong>{paciente.nome}</strong></td>
+                                                    <td>{paciente.genero}</td>
+                                                    <td>{paciente.cpf}</td>
                                                     <td>
                                                         <div className={styles.statusGroup}>
                                                             <label>
@@ -466,6 +483,7 @@ export function AdminDashboard({ user, signOut }) {
                                                             <label>
                                                                 <input 
                                                                     type="radio"
+                                                                    className={styles.presenceButton}
                                                                     name={`presenca-${paciente.id}`}
                                                                     value="FALTA_JUSTIFICADA"
                                                                     checked={presencas[paciente.id] === "FALTA_JUSTIFICADA"}
@@ -486,9 +504,14 @@ export function AdminDashboard({ user, signOut }) {
                                     </table>
                                 </div>
                             </div>
-                            <button className={styles.saveButton} onClick={salvarPresencas}>
+                            <div className={styles.actionButtons}>
+                                <button className={styles.backButton} onClick={() => setActivePage("dashboard")}>
+                                    Voltar
+                                </button>
+                                <button className={styles.saveButton} onClick={salvarPresencas}>
                                 Salvar Presenças
-                            </button>
+                                </button>
+                            </div>
                         </div>
                     )}
 
