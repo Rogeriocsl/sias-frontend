@@ -139,12 +139,8 @@ export function AdminDashboard({ user, signOut }) {
     const [selectedTurma, setSelectedTurma] = useState(null);
     const [turmas, setTurmas] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const pacientes = [
-        {id: 1, nome: "Junior"},
-        {id: 2, nome: "Vitor"},
-        {id: 3, nome: "Xico"},
-    ];
+    const [presencas, setPresencas] = useState({});
+    const [pacientes, setPacientes] = useState([]);
 
     useEffect(() => {
         async function carregarTurmas() {
@@ -165,6 +161,34 @@ export function AdminDashboard({ user, signOut }) {
         }
         carregarTurmas();
     }, []);
+
+    async function salvarPresencas() {
+        try {
+            for (const pacienteId in presencas) {
+                const response = await fetch("http://localhost:8080/api/presenca", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        pacienteId: Number(pacienteId),
+                        dataPresenca: new Date().toISOString().split("T")[0],
+                        status: presencas[pacienteId],
+                        observacao: "",
+                        atividade: "GINASTICA"
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ${response.status}`);
+                }
+            }
+            alert("Presenças salvas com sucesso!");
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao salvar presença");
+        }
+    }
 
     return (
         <div className={styles.layout}>
@@ -414,6 +438,13 @@ export function AdminDashboard({ user, signOut }) {
                                                                     type="radio"
                                                                     name={`presenca-${paciente.id}`}
                                                                     value="PRESENTE"
+                                                                    checked={presencas[paciente.id] === "PRESENTE"}
+                                                                    onChange={(e) =>
+                                                                        setPresencas({
+                                                                            ...presencas,
+                                                                            [paciente.id]: e.target.value
+                                                                        })
+                                                                    }
                                                                 />
                                                                 Presente
                                                             </label>
@@ -422,6 +453,13 @@ export function AdminDashboard({ user, signOut }) {
                                                                     type="radio"
                                                                     name={`presenca-${paciente.id}`}
                                                                     value="FALTA"
+                                                                    checked={presencas[paciente.id] === "FALTA"}
+                                                                    onChange={(e) =>
+                                                                        setPresencas({
+                                                                            ...presencas,
+                                                                            [paciente.id]: e.target.value
+                                                                        })
+                                                                    }
                                                                 />
                                                                 Falta
                                                             </label>
@@ -429,7 +467,14 @@ export function AdminDashboard({ user, signOut }) {
                                                                 <input 
                                                                     type="radio"
                                                                     name={`presenca-${paciente.id}`}
-                                                                    value="JUSTIFICADA"
+                                                                    value="FALTA_JUSTIFICADA"
+                                                                    checked={presencas[paciente.id] === "FALTA_JUSTIFICADA"}
+                                                                    onChange={(e) =>
+                                                                        setPresencas({
+                                                                            ...presencas,
+                                                                            [paciente.id]: e.target.value
+                                                                        })
+                                                                    }
                                                                 />
                                                                 Falta Justificada
                                                             </label>
@@ -441,6 +486,9 @@ export function AdminDashboard({ user, signOut }) {
                                     </table>
                                 </div>
                             </div>
+                            <button className={styles.saveButton} onClick={salvarPresencas}>
+                                Salvar Presenças
+                            </button>
                         </div>
                     )}
 
