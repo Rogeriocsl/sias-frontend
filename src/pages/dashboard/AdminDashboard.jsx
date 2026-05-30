@@ -136,8 +136,9 @@ const IconTrendUp = () => (
 export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [selectedTurmas, setSelectedTurmas] = useState(null);
+    const [selectedTurma, setSelectedTurma] = useState(null);
     const [turmas, setTurmas] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const pacientes = [
         {id: 1, nome: "Junior"},
@@ -146,7 +147,23 @@ export function AdminDashboard({ user, signOut }) {
     ];
 
     useEffect(() => {
-        // Api vai ser aqui
+        async function carregarTurmas() {
+            try {
+                const response = await fetch("http://localhost:8080/api/turmas");
+
+                if (!response.ok) {
+                    throw new Error("Erro ao buscar turmas");
+                }
+
+                const data = await response.json();
+                setTurmas(data);
+            } catch (error) {
+                console.error("Erro ao carregar turmas:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        carregarTurmas();
     }, []);
 
     return (
@@ -242,10 +259,32 @@ export function AdminDashboard({ user, signOut }) {
                         </p>
                     </div>
                 </header>
-
+                
                 <div className={styles.content}>
                     {activePage === "dashboard" && (
                         <div className={styles.container}>
+                            <h2 className={styles.classTitle}>Turmas</h2>
+                            {loading ? (
+                                <p>Carregando turmas...</p>
+                            ) : (
+                                <div className={styles.metricsGrid}>
+                                    {turmas.map((turma) => (
+                                        <div
+                                            key={turma.id}
+                                            className={styles.card}
+                                            onClick={() => {
+                                                setSelectedTurma(turma);
+                                                setActivePage("turma");
+                                            }}
+                                        >
+                                            <span className={styles.classCardTitle}>{turma.nome}</span>
+                                            <span className={styles.classSub}>{turma.educador}</span>
+
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                           
                             {/* Grid de Métricas */}
                             <div className={styles.metricsGrid}>
                                 <div className={styles.card}>
@@ -344,52 +383,6 @@ export function AdminDashboard({ user, signOut }) {
                                     </table>
                                 </div>
                             </div>
-
-                            {/* Tabela de Turmas */}
-                            <div className={styles.tableSection}>
-                                <h3 className={styles.sectionTitle}>Turmas Cadastrdas</h3>
-                                <div className={styles.tableWrapper}>
-                                    <table className={styles.table}>
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>Educador</th>
-                                                <th>Quantidade de Alunos</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr onClick={() => {
-                                                setSelectedTurmas({
-                                                    nome: "Turma da Tarde",
-                                                    educador: "Profª Laila Maria",
-                                                    quantidadeAlunos: 23
-                                                })
-                                                setActivePage("turma");
-                                                }}>
-                                                <td>
-                                                    <strong>Turma da Tarde</strong>
-                                                </td>
-                                                <td>Profª Laila Maria</td>
-                                                <td>23</td>
-                                            </tr>
-                                            <tr onClick={() => {
-                                                setSelectedTurmas({
-                                                    nome: "Turma da Manhã",
-                                                    educador: "Profº João Pedro",
-                                                    quantidadeAlunos: 27
-                                                })
-                                                setActivePage("turma");
-                                                }}>
-                                                <td>
-                                                    <strong>Turma da Manhâ</strong>
-                                                </td>
-                                                <td>Profº João Pedro</td>
-                                                <td>27</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
                     )}
 
@@ -397,7 +390,7 @@ export function AdminDashboard({ user, signOut }) {
                         <div>
                             <button onClick={() => setActivePage("dashboard")}>Voltar</button>
                             <div className={styles.tableSection}>
-                                <h3 className={styles.sectionTitle}>{selectedTurmas.nome}</h3>
+                                <h3 className={styles.sectionTitle}>{selectedTurma.nome}</h3>
                                 <div className={styles.tableWrapper}>
                                     <table className={styles.table}>
                                         <thead>

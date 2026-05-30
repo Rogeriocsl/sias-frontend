@@ -281,6 +281,25 @@
     }
 }
 
+.classTitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.classSub {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #64748b;
+    letter-spacing: 0.05em;
+}
+
+.classCardTitle {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #0f172a;
+}
+
 /* Tela das Turmas */
 .statusGroup {
     display: flex;
