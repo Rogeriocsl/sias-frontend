@@ -231,3 +231,32 @@
         padding: 0.75rem 1rem;
     }
 }
+
+.encaminhamentoCard {
+    background-color: #f8fafc; /* Fundo cinza/azulado bem claro */
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #0284c7; /* Linha azul de destaque na esquerda */
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2.5rem 0; /* Separa bem dos dados de cima e de baixo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.encaminhamentoHeader {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+}
+
+.sectionTitle {
+    font-size: 1.15rem;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+}
+
+.sectionSubtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+}

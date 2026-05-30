@@ -5,6 +5,8 @@ import styles from "./PacienteForm.module.css";
 export function PacienteForm({ onVoltar, pacienteId = null }) {
     const isEdit = !!pacienteId;
 
+    console.log("➡️ ID do Paciente recebido no Form:", pacienteId);
+    console.log("➡️ O formulário entendeu que é Edição?", isEdit);
     const [formData, setFormData] = useState({
         nome: "",
         cpf: "",
@@ -13,13 +15,17 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
         genero: "",
         tipoSanguineo: "",
         unidadeId: "",
+        turmaId: "",
         condicoesSaude: [],
+        dataEncaminhamento: new Date().toISOString().split("T")[0],
+        observacoes: "",
     });
 
     const [unidades, setUnidades] = useState([]);
+    const [turmas, setTurmas] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(""); 
-    const [erros, setErros] = useState({}); 
+    const [error, setError] = useState("");
+    const [erros, setErros] = useState({});
 
     useEffect(() => {
         const carregarDadosIniciais = async () => {
@@ -27,22 +33,37 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             setError("");
             try {
                 const resUnidades = await api.get("/api/unidade");
+                const resTurmas = await api.get("/api/turmas");
+
                 setUnidades(resUnidades.data);
+                setTurmas(resTurmas.data);
 
                 if (isEdit) {
                     const resPaciente = await api.get(`/api/pacientes/${pacienteId}`);
                     const pac = resPaciente.data;
 
+                    const ultimoEncaminhamento =
+                        pac.encaminhamentos && pac.encaminhamentos.length > 0
+                            ? pac.encaminhamentos[pac.encaminhamentos.length - 1]
+                            : null;
+
                     setFormData({
-                        nome: pac.nome,
-                        cpf: pac.cpf,
-                        dataNascimento: pac.dataNascimento,
-                        telefone: pac.telefone,
-                        genero: pac.genero,
+                        nome: pac.nome || "",
+                        cpf: pac.cpf || "",
+                        dataNascimento: pac.dataNascimento || "",
+                        telefone: pac.telefone || "",
+                        genero: pac.genero || "",
                         tipoSanguineo: pac.tipoSanguineo || "",
-                        unidadeId: pac.unidadeId,
+                        unidadeId: pac.unidadeId || "",
+                        turmaId: pac.turmaId || "",
                         condicoesSaude: pac.condicoesSaude || [],
+                        dataEncaminhamento: ultimoEncaminhamento
+                            ? ultimoEncaminhamento.dataEncaminhamento
+                            : new Date().toISOString().split("T")[0],
+                        observacoes: ultimoEncaminhamento ? ultimoEncaminhamento.observacoes : "",
                     });
+
+                    console.log("✅ DADOS JOGADOS NO FORMULÁRIO COM SUCESSO!");
                 }
             } catch (err) {
                 console.error("Erro ao carregar dados da tela:", err);
@@ -132,6 +153,8 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError("");
 
         const nomeValido = validarCampo("nome", formData.nome);
         const cpfValido = validarCampo("cpf", formData.cpf);
@@ -140,16 +163,32 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
 
         if (!nomeValido || !cpfValido || !dataValida || !telValido) {
             setError("Por favor, corrija os erros nos campos sinalizados em vermelho.");
+            setLoading(false);
             return;
         }
 
-        setLoading(true);
-        setError("");
-
         const dadosTratados = {
-            ...formData,
+            nome: formData.nome,
             cpf: formData.cpf.replace(/\D/g, ""),
+            dataNascimento: formData.dataNascimento,
             telefone: formData.telefone.replace(/\D/g, ""),
+            genero: formData.genero,
+            tipoSanguineo: formData.tipoSanguineo || null,
+            unidadeId: formData.unidadeId ? Number(formData.unidadeId) : null,
+            turmaId: formData.turmaId ? Number(formData.turmaId) : null,
+            condicoesSaude: formData.condicoesSaude,
+
+            encaminhamentos: formData.observacoes
+                ? [
+                      {
+                          dataEncaminhamento: formData.dataEncaminhamento,
+                          motivo: "OUTRO",
+                          status: "PENDENTE",
+                          observacoes: formData.observacoes.trim(),
+                      },
+                  ]
+                : [],
+            avaliacoes: [],
         };
 
         try {
@@ -181,7 +220,7 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             {error && <div className={styles.errorAlert}>{error}</div>}
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                {/* Linha 1: Nome Completo */}
+                {/* ── SEÇÃO 1: DADOS PESSOAIS ── */}
                 <div className={styles.formGroup}>
                     <label htmlFor="nome" className={styles.label}>
                         Nome Completo
@@ -200,7 +239,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                     {erros.nome && <span className={styles.erroTexto}>{erros.nome}</span>}
                 </div>
 
-                {/* Linha 2: CPF e Data de Nascimento */}
                 <div className={styles.gridRow}>
                     <div className={styles.formGroup}>
                         <label htmlFor="cpf" className={styles.label}>
@@ -215,7 +253,7 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             onBlur={handleBlur}
                             className={`${styles.input} ${erros.cpf ? styles.inputErro : ""}`}
                             required
-                            maxLength={14} // Aumentado para suportar a máscara visual de pontos/hífen
+                            maxLength={14}
                             placeholder="Ex: 123.456.789-01"
                         />
                         {erros.cpf && <span className={styles.erroTexto}>{erros.cpf}</span>}
@@ -313,13 +351,75 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                         className={styles.select}
                         required
                     >
-                        <option value="">Selecione a UBS de referência do paciente...</option>
+                        <option value="">Selecione a UBS...</option>
                         {unidades.map((ubs) => (
                             <option key={ubs.id} value={ubs.id}>
                                 {ubs.nomeUnidade}
                             </option>
                         ))}
                     </select>
+                </div>
+
+                <div className={styles.encaminhamentoCard}>
+                    <div className={styles.encaminhamentoHeader}>
+                        <h3 className={styles.sectionTitle}>🏥 Dados do Encaminhamento</h3>
+                        <p className={styles.sectionSubtitle}>
+                            Preencha a turma de destino na Academia da Saúde e as recomendações para o Educador Físico.
+                        </p>
+                    </div>
+
+                    <div className={styles.gridRow}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="turmaId" className={styles.label}>
+                                Turma de Destino
+                            </label>
+                            <select
+                                id="turmaId"
+                                name="turmaId"
+                                value={formData.turmaId}
+                                onChange={handleChange}
+                                className={styles.select}
+                                required
+                            >
+                                <option value="">Selecione a turma de destino...</option>
+                                {turmas.map((t) => (
+                                    <option key={t.id} value={t.id}>
+                                        {t.nome}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="dataEncaminhamento" className={styles.label}>
+                                Data do Encaminhamento
+                            </label>
+                            <input
+                                type="date"
+                                id="dataEncaminhamento"
+                                name="dataEncaminhamento"
+                                value={formData.dataEncaminhamento}
+                                onChange={handleChange}
+                                className={styles.input}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="observacoes" className={styles.label}>
+                            Observações Clínicas / Recomendações
+                        </label>
+                        <textarea
+                            id="observacoes"
+                            name="observacoes"
+                            value={formData.observacoes}
+                            onChange={handleChange}
+                            className={styles.textarea}
+                            rows="3"
+                            placeholder="Ex: Liberado para caminhadas leves. Evitar impacto nos joelhos. Frequência cardíaca máxima recomendada: 120bpm..."
+                        />
+                    </div>
                 </div>
 
                 <div className={styles.formGroup}>
@@ -348,7 +448,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                     </div>
                 </div>
 
-                {/* Ações */}
                 <div className={styles.actions}>
                     <button type="button" onClick={onVoltar} className={styles.btnCancel} disabled={loading}>
                         Cancelar

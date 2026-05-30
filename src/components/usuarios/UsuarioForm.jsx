@@ -13,6 +13,7 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
         perfil: "",
     });
 
+    const [mudarSenha, setMudarSenha] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -47,11 +48,15 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
         setLoading(true);
         setError("");
 
+        const dadosParaEnviar = { ...formData };
+        if (isEdit && !mudarSenha) {
+            delete dadosParaEnviar.senha;
+        }
         try {
             if (isEdit) {
-                await api.put(`/api/usuarios/${usuarioId}`, formData);
+                await api.put(`/api/usuarios/${usuarioId}`, dadosParaEnviar);
             } else {
-                await api.post("/api/usuarios", formData);
+                await api.post("/api/usuarios", dadosParaEnviar);
             }
             onVoltar();
         } catch (err) {
@@ -108,7 +113,7 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
 
                     <div className={styles.formGroup}>
                         <label htmlFor="email" className={styles.label}>
-                            E-mail Institucional
+                            E-mail
                         </label>
                         <input
                             type="email"
@@ -126,8 +131,26 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
                 <div className={styles.gridRow}>
                     <div className={styles.formGroup}>
                         <label htmlFor="senha" className={styles.label}>
-                            {isEdit ? "Nova Senha (Deixe em branco para manter)" : "Senha de Acesso"}
+                            Senha de Acesso
                         </label>
+
+                        {isEdit && (
+                            <label className={styles.checkboxLabel} style={{ marginBottom: "0.5rem" }}>
+                                <input
+                                    type="checkbox"
+                                    checked={mudarSenha}
+                                    onChange={(e) => {
+                                        setMudarSenha(e.target.checked);
+                                        if (!e.target.checked) setFormData((prev) => ({ ...prev, senha: "" }));
+                                    }}
+                                    className={styles.checkboxInput}
+                                />
+                                <span style={{ fontSize: "0.8rem", fontWeight: "600", color: "#005b94" }}>
+                                    Desejo alterar a senha deste profissional
+                                </span>
+                            </label>
+                        )}
+
                         <input
                             type="password"
                             id="senha"
@@ -135,8 +158,9 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
                             value={formData.senha}
                             onChange={handleChange}
                             className={styles.input}
-                            required={!isEdit}
-                            placeholder="Mínimo 6 caracteres"
+                            required={!isEdit || mudarSenha}
+                            disabled={isEdit && !mudarSenha}
+                            placeholder={isEdit && !mudarSenha ? "••••••••" : "Mínimo 6 caracteres"}
                         />
                     </div>
 
