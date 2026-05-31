@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../../services/api";
 import { UsuarioForm } from "../../components/usuarios/UsuarioForm";
 import styles from "./Usuarios.module.css";
 
+// ── Ícones fora do componente para evitar recriação a cada render ──────────
 const IconEdit = () => (
     <svg
         viewBox="0 0 24 24"
@@ -18,6 +19,7 @@ const IconEdit = () => (
         <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z" />
     </svg>
 );
+
 const IconTrash = () => (
     <svg
         viewBox="0 0 24 24"
@@ -33,6 +35,7 @@ const IconTrash = () => (
         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
 );
+
 const IconUserPlus = () => (
     <svg
         viewBox="0 0 24 24"
@@ -51,47 +54,160 @@ const IconUserPlus = () => (
     </svg>
 );
 
+// ── Componente de badge de perfil isolado ──────────────────────────────────
+function RoleBadge({ perfil }) {
+    const label = perfil?.replace("ROLE_", "") ?? "—";
+    const modifier = perfil?.toLowerCase() ?? "";
+    return <span className={`${styles.roleBadge} ${styles[modifier]}`}>{label}</span>;
+}
+
+// ── Modal de confirmação de exclusão isolado ───────────────────────────────
+function DeleteModal({ usuario, loading, onConfirm, onCancel }) {
+    return (
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div className={styles.modalContent}>
+                <div className={styles.modalIcon}>⚠️</div>
+                <h3 id="modal-title" className={styles.modalTitle}>
+                    Excluir Profissional
+                </h3>
+                <p className={styles.modalText}>
+                    Tem certeza que deseja excluir <strong>{usuario?.nome}</strong> do sistema?
+                    <br />
+                    Esta ação não poderá ser desfeita.
+                </p>
+                <div className={styles.modalActions}>
+                    <button type="button" onClick={onCancel} className={styles.btnCancelModal} disabled={loading}>
+                        Cancelar
+                    </button>
+                    <button type="button" onClick={onConfirm} className={styles.btnConfirmDelete} disabled={loading}>
+                        {loading ? "Excluindo..." : "Sim, Excluir"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── Componente principal ───────────────────────────────────────────────────
 export function Usuarios() {
     const [view, setView] = useState("lista");
     const [usuarios, setUsuarios] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const [usuarioSelecionadoId, setUsuarioSelecionadoId] = useState(null);
+    const [usuarioToDelete, setUsuarioToDelete] = useState(null);
+    const [loadingDelete, setLoadingDelete] = useState(false);
 
-    const carregarUsuarios = () => {
+    const carregarUsuarios = useCallback(async () => {
         setLoading(true);
-        api.get("/api/usuarios")
-            .then((response) => setUsuarios(response.data))
-            .catch((err) => console.error("Erro ao listar usuários:", err))
-            .finally(() => setLoading(false));
-    };
+        setError(null);
+        try {
+            const response = await api.get("/api/usuarios");
+            setUsuarios(response.data);
+        } catch (err) {
+            console.error("Erro ao listar usuários:", err);
+            setError("Não foi possível carregar os profissionais. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (view === "lista") {
             carregarUsuarios();
             setUsuarioSelecionadoId(null);
         }
-    }, [view]);
+    }, [view, carregarUsuarios]);
 
-    const handleEditar = (id) => {
+    const handleEditar = useCallback((id) => {
         setUsuarioSelecionadoId(id);
         setView("cadastro");
-    };
+    }, []);
 
-    const handleDeletar = async (id) => {
-        if (window.confirm("Deseja realmente remover este profissional do SIAS?")) {
-            try {
-                await api.delete(`/api/usuarios/${id}`);
-                carregarUsuarios();
-            } catch (err) {
-                alert("Erro ao remover usuário.");
-            }
+    const confirmarExclusao = useCallback(async () => {
+        if (!usuarioToDelete) return;
+
+        setLoadingDelete(true);
+        try {
+            await api.delete(`/api/usuarios/${usuarioToDelete.id}`);
+            setUsuarioToDelete(null);
+            await carregarUsuarios();
+        } catch (err) {
+            console.error("Erro ao remover usuário:", err);
+            setError("Erro ao remover usuário. Ele pode estar vinculado a outros registros.");
+            setUsuarioToDelete(null);
+        } finally {
+            setLoadingDelete(false);
         }
-    };
+    }, [usuarioToDelete, carregarUsuarios]);
 
+    // ── Early return para a view de cadastro ──────────────────────────────
     if (view === "cadastro") {
         return <UsuarioForm usuarioId={usuarioSelecionadoId} onVoltar={() => setView("lista")} />;
     }
+
+    // ── Conteúdo da tabela ─────────────────────────────────────────────────
+    const renderTableBody = () => {
+        if (loading) {
+            return <div className={styles.feedback}>Carregando profissionais...</div>;
+        }
+        if (error) {
+            return <div className={`${styles.feedback} ${styles.feedbackError}`}>{error}</div>;
+        }
+        if (usuarios.length === 0) {
+            return <div className={styles.feedback}>Nenhum profissional cadastrado no sistema.</div>;
+        }
+        return (
+            <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Login / Usuário</th>
+                            <th>E-mail</th>
+                            <th>Perfil / Função</th>
+                            <th className={styles.textCenter}>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {usuarios.map((usr) => (
+                            <tr key={usr.id}>
+                                <td data-label="Nome">
+                                    <strong>{usr.nome}</strong>
+                                </td>
+                                <td data-label="Login">{usr.login}</td>
+                                <td data-label="E-mail">{usr.email}</td>
+                                <td data-label="Perfil">
+                                    <RoleBadge perfil={usr.perfil} />
+                                </td>
+                                <td data-label="Ações" className={styles.textCenter}>
+                                    <div className={styles.actionsGroup}>
+                                        <button
+                                            className={styles.btnEdit}
+                                            onClick={() => handleEditar(usr.id)}
+                                            title="Editar Usuário"
+                                            aria-label={`Editar ${usr.nome}`}
+                                        >
+                                            <IconEdit />
+                                        </button>
+                                        <button
+                                            className={styles.btnDelete}
+                                            onClick={() => setUsuarioToDelete(usr)}
+                                            title="Remover Usuário"
+                                            aria-label={`Remover ${usr.nome}`}
+                                        >
+                                            <IconTrash />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
 
     return (
         <div className={styles.container}>
@@ -107,63 +223,16 @@ export function Usuarios() {
                 </button>
             </div>
 
-            <div className={styles.tableCard}>
-                {loading ? (
-                    <div className={styles.feedback}>Carregando profissionais...</div>
-                ) : usuarios.length === 0 ? (
-                    <div className={styles.feedback}>Nenhum profissional cadastrado no sistema.</div>
-                ) : (
-                    <div className={styles.tableWrapper}>
-                        <table className={styles.table}>
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Login / Usuário</th>
-                                    <th>E-mail</th>
-                                    <th>Perfil / Função</th>
-                                    <th className={styles.textCenter}>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {usuarios.map((usr) => (
-                                    <tr key={usr.id}>
-                                        <td data-label="Nome">
-                                            <strong>{usr.nome}</strong>
-                                        </td>
-                                        <td data-label="Login">{usr.login}</td>
-                                        <td data-label="E-mail">{usr.email}</td>
-                                        <td data-label="Perfil">
-                                            <span
-                                                className={`${styles.roleBadge} ${styles[usr.perfil?.toLowerCase() || ""]}`}
-                                            >
-                                                {usr.perfil?.replace("ROLE_", "")}
-                                            </span>
-                                        </td>
-                                        <td data-label="Ações" className={styles.textCenter}>
-                                            <div className={styles.actionsGroup}>
-                                                <button
-                                                    className={styles.btnEdit}
-                                                    onClick={() => handleEditar(usr.id)}
-                                                    title="Editar Usuário"
-                                                >
-                                                    <IconEdit />
-                                                </button>
-                                                <button
-                                                    className={styles.btnDelete}
-                                                    onClick={() => handleDeletar(usr.id)}
-                                                    title="Remover Usuário"
-                                                >
-                                                    <IconTrash />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
+            <div className={styles.tableCard}>{renderTableBody()}</div>
+
+            {usuarioToDelete && (
+                <DeleteModal
+                    usuario={usuarioToDelete}
+                    loading={loadingDelete}
+                    onConfirm={confirmarExclusao}
+                    onCancel={() => setUsuarioToDelete(null)}
+                />
+            )}
         </div>
     );
 }

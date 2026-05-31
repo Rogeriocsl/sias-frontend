@@ -5,8 +5,6 @@ import styles from "./PacienteForm.module.css";
 export function PacienteForm({ onVoltar, pacienteId = null }) {
     const isEdit = !!pacienteId;
 
-    console.log("➡️ ID do Paciente recebido no Form:", pacienteId);
-    console.log("➡️ O formulário entendeu que é Edição?", isEdit);
     const [formData, setFormData] = useState({
         nome: "",
         cpf: "",
@@ -62,8 +60,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             : new Date().toISOString().split("T")[0],
                         observacoes: ultimoEncaminhamento ? ultimoEncaminhamento.observacoes : "",
                     });
-
-                    console.log("✅ DADOS JOGADOS NO FORMULÁRIO COM SUCESSO!");
                 }
             } catch (err) {
                 console.error("Erro ao carregar dados da tela:", err);
@@ -106,6 +102,11 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             else if (numerosTel.length < 10 || numerosTel.length > 11) {
                 erroMensagem = "O telefone deve conter 10 (Fixo) ou 11 (Celular) dígitos com DDD.";
             }
+        }
+
+        // 🚀 NOVA TRAVA: Verifica se a UBS foi selecionada
+        if (name === "unidadeId") {
+            if (!value) erroMensagem = "A seleção da Unidade Básica de Saúde é obrigatória.";
         }
 
         setErros((prev) => ({ ...prev, [name]: erroMensagem }));
@@ -161,8 +162,12 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
         const dataValida = validarCampo("dataNascimento", formData.dataNascimento);
         const telValido = validarCampo("telefone", formData.telefone);
 
-        if (!nomeValido || !cpfValido || !dataValida || !telValido) {
-            setError("Por favor, corrija os erros nos campos sinalizados em vermelho.");
+        // 🚀 Aciona a trava da UBS na hora do envio
+        const ubsValida = validarCampo("unidadeId", formData.unidadeId);
+
+        // Se qualquer um for falso, barra o envio e mostra mensagem na tela
+        if (!nomeValido || !cpfValido || !dataValida || !telValido || !ubsValida) {
+            setError("Por favor, corrija os erros ou preencha os campos obrigatórios.");
             setLoading(false);
             return;
         }
@@ -358,68 +363,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             </option>
                         ))}
                     </select>
-                </div>
-
-                <div className={styles.encaminhamentoCard}>
-                    <div className={styles.encaminhamentoHeader}>
-                        <h3 className={styles.sectionTitle}>🏥 Dados do Encaminhamento</h3>
-                        <p className={styles.sectionSubtitle}>
-                            Preencha a turma de destino na Academia da Saúde e as recomendações para o Educador Físico.
-                        </p>
-                    </div>
-
-                    <div className={styles.gridRow}>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="turmaId" className={styles.label}>
-                                Turma de Destino
-                            </label>
-                            <select
-                                id="turmaId"
-                                name="turmaId"
-                                value={formData.turmaId}
-                                onChange={handleChange}
-                                className={styles.select}
-                                required
-                            >
-                                <option value="">Selecione a turma de destino...</option>
-                                {turmas.map((t) => (
-                                    <option key={t.id} value={t.id}>
-                                        {t.nome}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className={styles.formGroup}>
-                            <label htmlFor="dataEncaminhamento" className={styles.label}>
-                                Data do Encaminhamento
-                            </label>
-                            <input
-                                type="date"
-                                id="dataEncaminhamento"
-                                name="dataEncaminhamento"
-                                value={formData.dataEncaminhamento}
-                                onChange={handleChange}
-                                className={styles.input}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label htmlFor="observacoes" className={styles.label}>
-                            Observações Clínicas / Recomendações
-                        </label>
-                        <textarea
-                            id="observacoes"
-                            name="observacoes"
-                            value={formData.observacoes}
-                            onChange={handleChange}
-                            className={styles.textarea}
-                            rows="3"
-                            placeholder="Ex: Liberado para caminhadas leves. Evitar impacto nos joelhos. Frequência cardíaca máxima recomendada: 120bpm..."
-                        />
-                    </div>
                 </div>
 
                 <div className={styles.formGroup}>

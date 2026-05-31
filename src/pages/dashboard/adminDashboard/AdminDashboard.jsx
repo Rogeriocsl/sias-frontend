@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
     Sidebar,
     SidebarNav,
@@ -127,68 +127,125 @@ const IconLogout = () => (
 );
 const IconTrendUp = () => (
     <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5}>
-        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-        <polyline points="17 6 23 6 23 12"></polyline>
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
     </svg>
 );
+
+const METRICS = [
+    {
+        title: "Total de Usuários",
+        value: "148",
+        sub: "Profissionais cadastrados",
+        badge: { label: "+12%", variant: "success" },
+    },
+    {
+        title: "Médicos Ativos",
+        value: "42",
+        sub: "Módulo Saúde integrado",
+    },
+    {
+        title: "Educadores Físicos",
+        value: "56",
+        sub: "Acompanhamento comunitário",
+    },
+    {
+        title: "Encaminhamentos",
+        value: "1.240",
+        sub: "Pontes de dados geradas",
+    },
+];
+
+const NAV_PRINCIPAL = [
+    { id: "dashboard", label: "Dashboard", icon: <IconGrid /> },
+    { id: "usuarios", label: "Cadastro de Usuários", icon: <IconUsers /> },
+    { id: "pacientes", label: "Cadastro de Pacientes", icon: <IconUsers /> },
+    { id: "relatorios", label: "Relatórios", icon: <IconFileText /> },
+];
+
+const NAV_SISTEMA = [
+    { id: "notificacoes", label: "Notificações", icon: <IconBell />, badge: 12 },
+    { id: "configuracoes", label: "Configurações", icon: <IconSettings /> },
+];
+
+function MetricCard({ title, value, sub, badge }) {
+    return (
+        <div className={styles.card}>
+            <div className={styles.cardHeader}>
+                <span className={styles.cardTitle}>{title}</span>
+                {badge && (
+                    <span className={`${styles.badge} ${styles[`badge_${badge.variant}`]}`}>
+                        <IconTrendUp /> {badge.label}
+                    </span>
+                )}
+            </div>
+            <div className={styles.cardValue}>{value}</div>
+            <p className={styles.cardSub}>{sub}</p>
+        </div>
+    );
+}
+
+function DashboardHome() {
+    return (
+        <div className={styles.container}>
+            <div className={styles.metricsGrid}>
+                {METRICS.map((m) => (
+                    <MetricCard key={m.title} {...m} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function Placeholder({ label }) {
+    return <div className={styles.placeholder}>{label}</div>;
+}
+
+const PAGE_MAP = {
+    dashboard: <DashboardHome />,
+    usuarios: <Usuarios />,
+    pacientes: <Pacientes />,
+    relatorios: <Placeholder label="Tela de Relatórios" />,
+    notificacoes: <Placeholder label="Tela de Notificações" />,
+    configuracoes: <Placeholder label="Tela de Configurações" />,
+};
 
 export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
     const [isCollapsed, setIsCollapsed] = useState(false);
 
+    const navigate = useCallback((page) => setActivePage(page), []);
+
+    const displayName = user?.nome || user?.login || "Usuário";
+    const avatarChar = (user?.nome?.[0] || user?.login?.[0] || "U").toUpperCase();
+
     return (
         <div className={styles.layout}>
+            {/* ── Sidebar ── */}
             <Sidebar collapsed={isCollapsed} onCollapsedChange={setIsCollapsed}>
                 <SidebarNav>
                     <SidebarSection label="Principal">
-                        <SidebarItem
-                            icon={<IconGrid />}
-                            active={activePage === "dashboard"}
-                            onClick={() => setActivePage("dashboard")}
-                        >
-                            Dashboard
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconUsers />}
-                            active={activePage === "usuarios" || activePage === "usuarios-cadastro"}
-                            onClick={() => setActivePage("usuarios")}
-                        >
-                            Cadastro De Usuários
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconUsers />}
-                            active={activePage === "pacientes" || activePage === "pacientes-cadastro"}
-                            onClick={() => setActivePage("pacientes")}
-                        >
-                            Cadastro De Pacientes
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconFileText />}
-                            active={activePage === "relatorios"}
-                            onClick={() => setActivePage("relatorios")}
-                        >
-                            Relatórios
-                        </SidebarItem>
+                        {NAV_PRINCIPAL.map(({ id, label, icon }) => (
+                            <SidebarItem key={id} icon={icon} active={activePage === id} onClick={() => navigate(id)}>
+                                {label}
+                            </SidebarItem>
+                        ))}
                     </SidebarSection>
 
                     <SidebarSeparator />
 
                     <SidebarSection label="Sistema">
-                        <SidebarItem
-                            icon={<IconBell />}
-                            active={activePage === "notificacoes"}
-                            badge={12}
-                            onClick={() => setActivePage("notificacoes")}
-                        >
-                            Notificações
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconSettings />}
-                            active={activePage === "configuracoes"}
-                            onClick={() => setActivePage("configuracoes")}
-                        >
-                            Configurações
-                        </SidebarItem>
+                        {NAV_SISTEMA.map(({ id, label, icon, badge }) => (
+                            <SidebarItem
+                                key={id}
+                                icon={icon}
+                                active={activePage === id}
+                                badge={badge}
+                                onClick={() => navigate(id)}
+                            >
+                                {label}
+                            </SidebarItem>
+                        ))}
                     </SidebarSection>
                 </SidebarNav>
 
@@ -196,14 +253,10 @@ export function AdminDashboard({ user, signOut }) {
                     <Menu placement="top-start">
                         <MenuTrigger showChevron={false}>
                             <div className={`${styles.userTrigger} ${isCollapsed ? styles.collapsedTrigger : ""}`}>
-                                <span className={styles.avatar}>
-                                    {(user?.nome?.[0] || user?.login?.[0] || "U").toUpperCase()}
-                                </span>
+                                <span className={styles.avatar}>{avatarChar}</span>
                                 {!isCollapsed && (
                                     <span className={styles.userInfo}>
-                                        <span className={styles.userName}>
-                                            {user?.nome || user?.login || "Usuário"}
-                                        </span>
+                                        <span className={styles.userName}>{displayName}</span>
                                         <span className={styles.userRole}>Administrador</span>
                                     </span>
                                 )}
@@ -228,60 +281,12 @@ export function AdminDashboard({ user, signOut }) {
                     <div>
                         <h1 className={styles.pageTitle}>Painel Administrativo ⚙️</h1>
                         <p className={styles.pageSubtitle}>
-                            Bem-vindo, <strong>{user?.nome || user?.login || "Usuário"}</strong>
+                            Bem-vindo, <strong>{displayName}</strong>
                         </p>
                     </div>
                 </header>
 
-                <div className={styles.content}>
-                    {activePage === "dashboard" && (
-                        <div className={styles.container}>
-                            <div className={styles.metricsGrid}>
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Total de Usuários</span>
-                                        <span className={`${styles.badge} ${styles.badgeSuccess}`}>
-                                            <IconTrendUp /> +12%
-                                        </span>
-                                    </div>
-                                    <div className={styles.cardValue}>148</div>
-                                    <p className={styles.cardSub}>Profissionais cadastrados</p>
-                                </div>
-
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Médicos Ativos</span>
-                                    </div>
-                                    <div className={styles.cardValue}>42</div>
-                                    <p className={styles.cardSub}>Módulo Saúde integrado</p>
-                                </div>
-
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Educadores Físicos</span>
-                                    </div>
-                                    <div className={styles.cardValue}>56</div>
-                                    <p className={styles.cardSub}>Acompanhamento comunitário</p>
-                                </div>
-
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Encaminhamentos</span>
-                                    </div>
-                                    <div className={styles.cardValue}>1,240</div>
-                                    <p className={styles.cardSub}>Pontes de dados geradas</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activePage === "usuarios" && <Usuarios />}
-                    {activePage === "pacientes" && <Pacientes />}
-
-                    {activePage === "relatorios" && <div className={styles.placeholder}>Tela de Relatórios</div>}
-                    {activePage === "notificacoes" && <div className={styles.placeholder}>Tela de Notificações</div>}
-                    {activePage === "configuracoes" && <div className={styles.placeholder}>Tela de Configurações</div>}
-                </div>
+                <div className={styles.content}>{PAGE_MAP[activePage] ?? null}</div>
             </div>
         </div>
     );

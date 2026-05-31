@@ -1,59 +1,105 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useCallback } from "react";
 import { api } from "../services/api";
 
-const AuthContext = createContext({});
+const TOKEN_KEY = "@SIAS:token";
+const USER_KEY = "@SIAS:user";
+
+const storage = {
+    getToken: () => localStorage.getItem(TOKEN_KEY),
+    getUser: () => {
+        try {
+            const raw = localStorage.getItem(USER_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch {
+            return null;
+        }
+    },
+    save: (token, user) => {
+        localStorage.setItem(TOKEN_KEY, token);
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+    },
+    clear: () => {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+    },
+};
+
+const setAuthHeader = (token) => {
+    if (token) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+        delete api.defaults.headers.common["Authorization"];
+    }
+};
+
+const AuthContext = createContext({
+    signed: false,
+    user: null,
+    loading: true,
+    signIn: async () => ({ success: false, message: "" }),
+    signOut: () => {},
+});
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Restaura sessão ao montar
     useEffect(() => {
-        const storagedToken = localStorage.getItem("@SIAS:token");
-        const storagedUser = localStorage.getItem("@SIAS:user");
+        const token = storage.getToken();
+        const storedUser = storage.getUser();
 
-        if (storagedToken && storagedUser) {
-            setUser(JSON.parse(storagedUser));
-            api.defaults.headers.Authorization = `Bearer ${storagedToken}`;
+        if (token && storedUser) {
+            setAuthHeader(token);
+            setUser(storedUser);
         }
         setLoading(false);
     }, []);
 
-    async function signIn({ login, senha }) {
+    const signIn = useCallback(async ({ login, senha }) => {
         try {
-            const response = await api.post("/auth/login", {
-                login: login,
-                senha: senha,
+            const { data } = await api.post("/auth/login", {
+                login,
+                senha,
                 username: login,
                 password: senha,
             });
 
-            const token = response.data.token;
-            const perfilReal = response.data.perfil;
-            const nomeReal = response.data.nome;
+            const token = data.token;
+
+            if (!token) {
+                return { success: false, message: "Resposta inválida do servidor." };
+            }
 
             const usuarioLogado = {
-                login: response.data.login || login,
-                perfil: perfilReal,
-                nome: nomeReal
+                login: data.login ?? login,
+                perfil: data.perfil ?? null,
+                nome: data.nome ?? null,
             };
 
+            setAuthHeader(token);
+            storage.save(token, usuarioLogado);
             setUser(usuarioLogado);
-            localStorage.setItem("@SIAS:token", token);
-            localStorage.setItem("@SIAS:user", JSON.stringify(usuarioLogado));
-            api.defaults.headers.Authorization = `Bearer ${token}`;
 
             return { success: true };
         } catch (error) {
-            console.error("Erro na autenticação:", error);
-            return { success: false, message: "Usuario ou senha invalidos." };
-        }
-    }
+            const status = error.response?.status;
 
-    function signOut() {
-        localStorage.removeItem("@SIAS:token");
-        localStorage.removeItem("@SIAS:user");
+            const message =
+                status === 401 || status === 403
+                    ? "Usuário ou senha inválidos."
+                    : (error.response?.data?.message ?? "Erro ao conectar. Tente novamente.");
+
+            console.error("Erro na autenticação:", error);
+            return { success: false, message };
+        }
+    }, []);
+
+    const signOut = useCallback(() => {
+        setAuthHeader(null);
+        storage.clear();
         setUser(null);
-    }
+    }, []);
 
     return (
         <AuthContext.Provider value={{ signed: !!user, user, loading, signIn, signOut }}>
@@ -62,4 +108,10 @@ export function AuthProvider({ children }) {
     );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth deve ser usado dentro de um <AuthProvider>.");
+    }
+    return context;
+};
