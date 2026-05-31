@@ -12,6 +12,7 @@ import styles from "./AdminDashboard.module.css";
 import { Usuarios } from "../../../pages/usuarios/Usuarios";
 import { Pacientes } from "../../../pages/pacientes/Pacientes";
 import { Turmas } from "../../../pages/turmas/Turmas";
+import { Encaminhamentos } from "../../../pages/encaminhamentos/Encaminhamentos";
 
 const IconGrid = () => (
     <svg
@@ -132,7 +133,6 @@ const IconTrendUp = () => (
         <polyline points="17 6 23 6 23 12" />
     </svg>
 );
-
 const IconCalendar = () => (
     <svg
         viewBox="0 0 24 24"
@@ -148,6 +148,24 @@ const IconCalendar = () => (
         <line x1="16" y1="2" x2="16" y2="6" />
         <line x1="8" y1="2" x2="8" y2="6" />
         <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
+const IconShuffle = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={18}
+        height={18}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <polyline points="16 3 21 3 21 8" />
+        <line x1="4" y1="20" x2="21" y2="3" />
+        <polyline points="21 16 21 21 16 21" />
+        <line x1="15" y1="15" x2="21" y2="21" />
+        <line x1="4" y1="4" x2="9" y2="9" />
     </svg>
 );
 
@@ -169,6 +187,7 @@ const NAV_PRINCIPAL = [
     { id: "usuarios", label: "Cadastro de Usuários", icon: <IconUsers /> },
     { id: "pacientes", label: "Cadastro de Pacientes", icon: <IconUsers /> },
     { id: "relatorios", label: "Relatórios", icon: <IconFileText /> },
+    { id: "encaminhamentos", label: "Encaminhamentos", icon: <IconShuffle /> },
 ];
 
 const NAV_SISTEMA = [
@@ -214,6 +233,7 @@ const PAGE_MAP = {
     usuarios: <Usuarios />,
     turmas: <Turmas />,
     pacientes: <Pacientes />,
+    encaminhamentos: <Encaminhamentos />,
     relatorios: <Placeholder label="Tela de Relatórios" />,
     notificacoes: <Placeholder label="Tela de Notificações" />,
     configuracoes: <Placeholder label="Tela de Configurações" />,
