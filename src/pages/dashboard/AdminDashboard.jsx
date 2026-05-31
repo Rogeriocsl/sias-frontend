@@ -308,6 +308,11 @@ export function AdminDashboard({ user, signOut }) {
                             <h2 className={styles.classTitle}>Turmas</h2>
                             {loading ? (
                                 <p>Carregando turmas...</p>
+                            ) : turmas.length === 0 ? (
+                                <div>
+                                    <h3>Nenhuma turma encontrada</h3>
+                                    <p>Cadastre uma nova turma para começar.</p>
+                                </div>
                             ) : (
                                 <div className={styles.metricsGrid}>
                                     {turmas.map((turma) => (
