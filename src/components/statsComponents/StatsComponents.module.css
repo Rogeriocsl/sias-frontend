@@ -1,0 +1,113 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.header {
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 1rem;
+}
+
+.title {
+    color: var(--color-brand);
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}
+
+/* CARDS DE RESUMO */
+.gridCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.cardIcon {
+    font-size: 2.5rem;
+}
+
+.cardInfo h3 {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.numero {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-body);
+}
+
+.cardWarning {
+    border-left: 5px solid #f59e0b;
+}
+
+.cardSuccess {
+    border-left: 5px solid var(--color-accent);
+}
+
+/* GRÁFICOS */
+.chartsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.chartCard {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.chartTitle {
+    font-size: 1.1rem;
+    color: var(--color-text-strong);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.feedback,
+.errorAlert {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .chartsGrid {
+        grid-template-columns: 1fr;
+    }
+}

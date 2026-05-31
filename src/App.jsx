@@ -1,7 +1,7 @@
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { Login } from "./pages/login/Login";
 
-import { AdminDashboard } from "./pages/dashboard/adminDashboard/AdminDashboard";
+import { AdminDashboard } from "./pages/dashboard/admin/AdminDashboard";
 import { SaudeDashboard } from "./pages/dashboard/saudeDashboard/SaudeDashboard";
 import { EducadorDashboard } from "./pages/dashboard/educadorDashboard/EducadorDashboard";
 import { AccessDenied } from "./components/AcessDenied/AccessDenied";
