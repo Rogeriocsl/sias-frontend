@@ -4,10 +4,17 @@ import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
 import { ConfirmModal } from "../../components/modal/ConfirmModal";
 import styles from "./Pacientes.module.css";
 
-// ── Ícones ────────────────────────────────────────────────────────────────
 const IconUserPlus = () => (
-    <svg viewBox="0 0 24 24" width={16} height={16} fill="none"
-        stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+        viewBox="0 0 24 24"
+        width={16}
+        height={16}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <line x1="19" y1="8" x2="19" y2="14" />
@@ -16,25 +23,40 @@ const IconUserPlus = () => (
 );
 
 const IconEdit = () => (
-    <svg viewBox="0 0 24 24" width={14} height={14} fill="none"
-        stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+        viewBox="0 0 24 24"
+        width={14}
+        height={14}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
         <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z" />
     </svg>
 );
 
 const IconTrash = () => (
-    <svg viewBox="0 0 24 24" width={14} height={14} fill="none"
-        stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg
+        viewBox="0 0 24 24"
+        width={14}
+        height={14}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
         <polyline points="3 6 5 6 21 6" />
         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
 );
 
-// ── Helpers ───────────────────────────────────────────────────────────────
 const GENERO_LABEL = {
     MASCULINO: "Masc",
-    FEMININO:  "Fem",
+    FEMININO: "Fem",
 };
 
 function formatarGenero(genero) {
@@ -45,7 +67,6 @@ function formatarCondicao(cond) {
     return cond.replace(/_/g, " ");
 }
 
-// ── Subcomponente: badges de comorbidades ─────────────────────────────────
 function CondicoesBadges({ condicoes }) {
     if (!condicoes?.length) {
         return <span className={styles.noCond}>Nenhuma</span>;
@@ -61,15 +82,14 @@ function CondicoesBadges({ condicoes }) {
     );
 }
 
-// ── Componente principal ──────────────────────────────────────────────────
 export function Pacientes() {
-    const [view, setView]                         = useState("lista");
-    const [pacientes, setPacientes]               = useState([]);
-    const [loading, setLoading]                   = useState(false);
-    const [error, setError]                       = useState(null);
+    const [view, setView] = useState("lista");
+    const [pacientes, setPacientes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [pacienteSelecionadoId, setPacienteSelecionadoId] = useState(null);
-    const [pacienteParaDeletar, setPacienteParaDeletar]     = useState(null); // objeto { id, nome }
-    const [loadingDelete, setLoadingDelete]       = useState(false);
+    const [pacienteParaDeletar, setPacienteParaDeletar] = useState(null); // objeto { id, nome }
+    const [loadingDelete, setLoadingDelete] = useState(false);
 
     const carregarPacientes = useCallback(async () => {
         setLoading(true);
@@ -113,17 +133,10 @@ export function Pacientes() {
         }
     }, [pacienteParaDeletar, carregarPacientes]);
 
-    // ── Early return ──────────────────────────────────────────────────────
     if (view === "cadastro") {
-        return (
-            <PacienteForm
-                pacienteId={pacienteSelecionadoId}
-                onVoltar={() => setView("lista")}
-            />
-        );
+        return <PacienteForm pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
     }
 
-    // ── Conteúdo da tabela ────────────────────────────────────────────────
     const renderConteudo = () => {
         if (loading) {
             return <div className={styles.feedback}>Buscando registros na base do SIAS...</div>;
@@ -156,9 +169,7 @@ export function Pacientes() {
                                 <td data-label="CPF">{pac.cpf}</td>
                                 <td data-label="Telefone">{pac.telefone}</td>
                                 <td data-label="Gênero">
-                                    <span className={styles.genderLabel}>
-                                        {formatarGenero(pac.genero)}
-                                    </span>
+                                    <span className={styles.genderLabel}>{formatarGenero(pac.genero)}</span>
                                 </td>
                                 <td data-label="Comorbidades">
                                     <CondicoesBadges condicoes={pac.condicoesSaude} />
@@ -197,8 +208,8 @@ export function Pacientes() {
                 <div>
                     <h2 className={styles.pageTitle}>Gerenciamento de Pacientes 👥</h2>
                     <p className={styles.pageSubtitle}>
-                        Consulte históricos clínicos, gerencie prontuários e acompanhe a evolução
-                        de saúde da comunidade.
+                        Consulte históricos clínicos, gerencie prontuários e acompanhe a evolução de saúde da
+                        comunidade.
                     </p>
                 </div>
                 <button className={styles.btnNovo} onClick={() => setView("cadastro")}>
@@ -206,9 +217,7 @@ export function Pacientes() {
                 </button>
             </div>
 
-            <div className={styles.tableCard}>
-                {renderConteudo()}
-            </div>
+            <div className={styles.tableCard}>{renderConteudo()}</div>
 
             <ConfirmModal
                 isOpen={!!pacienteParaDeletar}

@@ -79,7 +79,6 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
             const { name, value } = e.target;
             setFormData((prev) => {
                 const next = { ...prev, [name]: value };
-                // Revalida em tempo real se o usuário já tentou submeter
                 if (submitted) {
                     setFieldErrors(validar(next, isEdit, mudarSenha));
                 }
@@ -164,7 +163,6 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
             )}
 
             <form onSubmit={handleSubmit} className={styles.form} noValidate>
-                {/* Nome */}
                 <Field label="Nome Completo" error={fieldErrors.nome}>
                     <input
                         type="text"
@@ -180,7 +178,6 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
                 </Field>
 
                 <div className={styles.gridRow}>
-                    {/* Login */}
                     <Field label="Login / Usuário" error={fieldErrors.login}>
                         <input
                             type="text"
@@ -198,7 +195,6 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
                         )}
                     </Field>
 
-                    {/* E-mail */}
                     <Field label="E-mail" error={fieldErrors.email}>
                         <input
                             type="email"
@@ -215,7 +211,6 @@ export function UsuarioForm({ onVoltar, usuarioId = null }) {
                 </div>
 
                 <div className={styles.gridRow}>
-                    {/* Senha */}
                     <Field label="Senha de Acesso" error={fieldErrors.senha}>
                         {isEdit && (
                             <label className={styles.checkboxLabel}>

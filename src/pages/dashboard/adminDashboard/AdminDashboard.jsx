@@ -63,7 +63,6 @@ const IconFileText = () => (
         <polyline points="14 2 14 8 20 8" />
         <line x1="16" y1="13" x2="8" y2="13" />
         <line x1="16" y1="17" x2="8" y2="17" />
-        <polyline points="10 9 9 9 8 9" />
     </svg>
 );
 const IconSettings = () => (
@@ -133,23 +132,6 @@ const IconTrendUp = () => (
         <polyline points="17 6 23 6 23 12" />
     </svg>
 );
-const IconCalendar = () => (
-    <svg
-        viewBox="0 0 24 24"
-        width={18}
-        height={18}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-);
 const IconShuffle = () => (
     <svg
         viewBox="0 0 24 24"
@@ -168,6 +150,23 @@ const IconShuffle = () => (
         <line x1="4" y1="4" x2="9" y2="9" />
     </svg>
 );
+const IconCalendar = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={18}
+        height={18}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
 
 const METRICS = [
     {
@@ -184,10 +183,10 @@ const METRICS = [
 const NAV_PRINCIPAL = [
     { id: "dashboard", label: "Dashboard", icon: <IconGrid /> },
     { id: "turmas", label: "Turmas", icon: <IconCalendar /> },
+    { id: "encaminhamentos", label: "Encaminhamentos", icon: <IconShuffle /> },
     { id: "usuarios", label: "Cadastro de Usuários", icon: <IconUsers /> },
     { id: "pacientes", label: "Cadastro de Pacientes", icon: <IconUsers /> },
     { id: "relatorios", label: "Relatórios", icon: <IconFileText /> },
-    { id: "encaminhamentos", label: "Encaminhamentos", icon: <IconShuffle /> },
 ];
 
 const NAV_SISTEMA = [
@@ -228,22 +227,22 @@ function Placeholder({ label }) {
     return <div className={styles.placeholder}>{label}</div>;
 }
 
-const PAGE_MAP = {
-    dashboard: <DashboardHome />,
-    usuarios: <Usuarios />,
-    turmas: <Turmas />,
-    pacientes: <Pacientes />,
-    encaminhamentos: <Encaminhamentos />,
-    relatorios: <Placeholder label="Tela de Relatórios" />,
-    notificacoes: <Placeholder label="Tela de Notificações" />,
-    configuracoes: <Placeholder label="Tela de Configurações" />,
-};
-
 export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const navigate = useCallback((page) => setActivePage(page), []);
+
+    const PAGE_MAP = {
+        dashboard: <DashboardHome />,
+        turmas: <Turmas onNovoPaciente={() => navigate("pacientes")} />,
+        encaminhamentos: <Encaminhamentos />,
+        usuarios: <Usuarios />,
+        pacientes: <Pacientes />,
+        relatorios: <Placeholder label="Tela de Relatórios" />,
+        notificacoes: <Placeholder label="Tela de Notificações" />,
+        configuracoes: <Placeholder label="Tela de Configurações" />,
+    };
 
     const displayName = user?.nome || user?.login || "Usuário";
     const avatarChar = (user?.nome?.[0] || user?.login?.[0] || "U").toUpperCase();
@@ -291,7 +290,6 @@ export function AdminDashboard({ user, signOut }) {
                                 )}
                             </div>
                         </MenuTrigger>
-
                         <MenuContent>
                             <MenuLabel>Minha Conta</MenuLabel>
                             <MenuItem icon={<IconUser />}>Perfil</MenuItem>

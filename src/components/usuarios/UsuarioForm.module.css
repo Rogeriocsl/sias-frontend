@@ -184,7 +184,6 @@
     border-style: dashed;
 }
 
-/* Estado de erro no campo */
 .hasError .input,
 .hasError .select {
     border-color: var(--clr-border-error);
@@ -194,7 +193,6 @@
     box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12);
 }
 
-/* Erro inline por campo */
 .fieldError {
     font-size: 0.78rem;
     color: var(--clr-danger-text);
@@ -207,7 +205,6 @@
     content: "⚠ ";
 }
 
-/* Hint informativo */
 .fieldHint {
     font-size: 0.75rem;
     color: var(--clr-text-disabled);

@@ -233,12 +233,12 @@
 }
 
 .encaminhamentoCard {
-    background-color: #f8fafc; /* Fundo cinza/azulado bem claro */
+    background-color: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-left: 4px solid #0284c7; /* Linha azul de destaque na esquerda */
+    border-left: 4px solid #0284c7;
     border-radius: 8px;
     padding: 1.5rem;
-    margin: 2.5rem 0; /* Separa bem dos dados de cima e de baixo */
+    margin: 2.5rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 

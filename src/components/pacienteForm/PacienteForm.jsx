@@ -162,10 +162,8 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
         const dataValida = validarCampo("dataNascimento", formData.dataNascimento);
         const telValido = validarCampo("telefone", formData.telefone);
 
-        // 🚀 Aciona a trava da UBS na hora do envio
         const ubsValida = validarCampo("unidadeId", formData.unidadeId);
 
-        // Se qualquer um for falso, barra o envio e mostra mensagem na tela
         if (!nomeValido || !cpfValido || !dataValida || !telValido || !ubsValida) {
             setError("Por favor, corrija os erros ou preencha os campos obrigatórios.");
             setLoading(false);
@@ -225,7 +223,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             {error && <div className={styles.errorAlert}>{error}</div>}
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                {/* ── SEÇÃO 1: DADOS PESSOAIS ── */}
                 <div className={styles.formGroup}>
                     <label htmlFor="nome" className={styles.label}>
                         Nome Completo

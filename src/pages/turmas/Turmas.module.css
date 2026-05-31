@@ -16,7 +16,6 @@
     }
 }
 
-/* ── Header ────────────────────────────────────────────────────────────── */
 .pageHeader {
     display: flex;
     align-items: center;
@@ -38,7 +37,427 @@
     margin: 0.25rem 0 0;
 }
 
-/* ── Feedback ──────────────────────────────────────────────────────────── */
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    animation: toastIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.toast_success {
+    background: var(--color-accent);
+    color: #fff;
+}
+.toast_warning {
+    background: #f59e0b;
+    color: #fff;
+}
+.toast_error {
+    background: var(--color-error);
+    color: #fff;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.emptyIcon {
+    color: var(--color-border);
+    margin-bottom: 0.5rem;
+}
+
+.emptyTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    margin: 0;
+}
+
+.emptyText {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 320px;
+}
+
+.turmasGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.turmaCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    text-align: left;
+    transition:
+        box-shadow 0.15s,
+        transform 0.15s,
+        border-color 0.15s;
+    width: 100%;
+}
+
+.turmaCard:hover {
+    box-shadow: 0 4px 16px rgba(0, 91, 148, 0.12);
+    border-color: var(--color-brand);
+    transform: translateY(-2px);
+}
+
+.turmaCard:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.turmaCardIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: rgba(0, 91, 148, 0.07);
+    color: var(--color-brand);
+    flex-shrink: 0;
+}
+
+.turmaCardInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    overflow: hidden;
+}
+
+.turmaNome {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.turmaEducador {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.turmaArrow {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    transition: transform 0.15s;
+}
+.turmaCard:hover .turmaArrow {
+    transform: translateX(4px);
+    color: var(--color-brand);
+}
+
+.chamadaWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.chamadaHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.chamadaHeaderInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.chamadaTitulo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    margin: 0;
+}
+
+.chamadaMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.metaBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(0, 91, 148, 0.07);
+    color: var(--color-brand);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.metaBadgeEducador {
+    padding: 0.2rem 0.6rem;
+    background: rgba(0, 141, 165, 0.08);
+    color: var(--color-accent-mid);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.btnNovoPaciente {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    background: var(--color-brand);
+    color: var(--color-brand-text);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background 0.15s,
+        transform 0.12s,
+        box-shadow 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 91, 148, 0.3);
+}
+.btnNovoPaciente:hover {
+    background: #004471;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 91, 148, 0.35);
+}
+.btnNovoPaciente:active {
+    transform: translateY(0);
+}
+
+.btnNovoPacienteSolto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    background: var(--color-brand);
+    color: var(--color-brand-text);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.15s;
+}
+.btnNovoPacienteSolto:hover {
+    background: #004471;
+}
+
+.progressoWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.progressoInfo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.progressoBar {
+    height: 6px;
+    background: var(--color-border);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progressoFill {
+    height: 100%;
+    background: var(--color-brand);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.tableCard {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.table thead {
+    background: #f8fafc;
+}
+
+.table th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--color-text-body);
+    vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.table tbody tr {
+    transition: background 0.12s;
+}
+.table tbody tr:hover:not(.rowRegistrado) {
+    background: rgba(0, 91, 148, 0.03);
+}
+
+.rowRegistrado {
+    opacity: 0.65;
+}
+
+.pacienteCell {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.avatarSmall {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 91, 148, 0.1);
+    color: var(--color-brand);
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.jaRegistradoBadge {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    margin-top: 0.1rem;
+}
+
+.toggleGroup {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.toggleBtn {
+    padding: 0.35rem 0.65rem;
+    border: none;
+    background: var(--color-card);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition:
+        background 0.12s,
+        color 0.12s;
+    border-right: 1px solid var(--color-border);
+    white-space: nowrap;
+}
+.toggleBtn:last-child {
+    border-right: none;
+}
+.toggleBtn:disabled {
+    cursor: not-allowed;
+}
+
+.toggle_present.toggleActive {
+    background: rgba(43, 182, 115, 0.12);
+    color: var(--color-accent);
+    font-weight: 700;
+}
+.toggle_absent.toggleActive {
+    background: rgba(225, 29, 72, 0.1);
+    color: var(--color-error);
+    font-weight: 700;
+}
+.toggle_justified.toggleActive {
+    background: rgba(251, 191, 36, 0.12);
+    color: #b45309;
+    font-weight: 700;
+}
+
+.toggle_present:not(.toggleActive):not(:disabled):hover {
+    background: rgba(43, 182, 115, 0.06);
+}
+.toggle_absent:not(.toggleActive):not(:disabled):hover {
+    background: rgba(225, 29, 72, 0.06);
+}
+.toggle_justified:not(.toggleActive):not(:disabled):hover {
+    background: rgba(251, 191, 36, 0.06);
+}
+
 .feedback {
     text-align: center;
     padding: 3rem 1.5rem;
@@ -57,167 +476,12 @@
     font-weight: 500;
 }
 
-/* ── Grid de turmas ────────────────────────────────────────────────────── */
-.turmasGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
-}
-
-.turmaCard {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 1.5rem;
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.05),
-        0 4px 12px rgba(0, 0, 0, 0.04);
-    cursor: pointer;
-    text-align: left;
-    transition:
-        box-shadow 0.15s,
-        transform 0.15s,
-        border-color 0.15s;
-}
-
-.turmaCard:hover {
-    box-shadow: 0 4px 16px rgba(0, 91, 148, 0.12);
-    border-color: var(--color-brand);
-    transform: translateY(-2px);
-}
-
-.turmaCard:focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
-}
-
-.turmaNome {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-text-strong);
-}
-
-.turmaEducador {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-}
-
-/* ── Table card (chamada) ──────────────────────────────────────────────── */
-.tableCard {
-    background: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.05),
-        0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.tableCardHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-    background: #f8fafc;
-}
-
-.sectionTitle {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-text-strong);
-    margin: 0;
-}
-
-.turmaEducadorBadge {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--color-accent-mid);
-    background: rgba(0, 141, 165, 0.08);
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-}
-
-/* ── Tabela ────────────────────────────────────────────────────────────── */
-.tableWrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.875rem;
-}
-
-.table thead {
-    background-color: #f8fafc;
-}
-
-.table th {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--color-border);
-    color: var(--color-text-muted);
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-}
-
-.table td {
-    padding: 0.9rem 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: var(--color-text-body);
-    vertical-align: middle;
-}
-
-.table tbody tr:last-child td {
-    border-bottom: none;
-}
-.table tbody tr {
-    transition: background-color 0.12s;
-}
-.table tbody tr:hover {
-    background-color: rgba(0, 91, 148, 0.03);
-}
-
-/* ── Radios de presença ────────────────────────────────────────────────── */
-.statusGroup {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-
-.radioLabel {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.85rem;
-    color: var(--color-text-body);
-    cursor: pointer;
-    user-select: none;
-}
-
-.radioLabel input[type="radio"] {
-    accent-color: var(--color-brand);
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-}
-
-/* ── Botões de ação ────────────────────────────────────────────────────── */
 .actionButtons {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
-    padding-top: 0.5rem;
+    padding-top: 0.25rem;
 }
 
 .btnVoltar {
@@ -274,16 +538,22 @@
     cursor: not-allowed;
 }
 
-.btnSalvar:focus-visible,
-.btnVoltar:focus-visible {
+.btnVoltar:focus-visible,
+.btnSalvar:focus-visible {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
 }
 
-/* ── Responsivo ────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
     .turmasGrid {
         grid-template-columns: 1fr;
+    }
+    .chamadaHeader {
+        flex-direction: column;
+    }
+    .btnNovoPaciente {
+        width: 100%;
+        justify-content: center;
     }
     .actionButtons {
         flex-direction: column-reverse;
@@ -292,6 +562,16 @@
     .btnSalvar {
         width: 100%;
         justify-content: center;
+    }
+    .toggleGroup {
+        flex-direction: column;
+    }
+    .toggleBtn {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+    }
+    .toggleBtn:last-child {
+        border-bottom: none;
     }
 
     .table,
@@ -302,13 +582,11 @@
     .table tr {
         display: block;
     }
-
     .table thead tr {
         position: absolute;
         top: -9999px;
         left: -9999px;
     }
-
     .table tr {
         border: 1px solid var(--color-border);
         border-radius: 8px;
@@ -316,7 +594,6 @@
         background: var(--color-card);
         padding: 0.25rem 0;
     }
-
     .table td {
         border: none;
         border-bottom: 1px solid #f1f5f9;
@@ -327,7 +604,6 @@
     .table td:last-child {
         border-bottom: none;
     }
-
     .table td::before {
         content: attr(data-label);
         position: absolute;
@@ -339,8 +615,36 @@
         font-size: 0.72rem;
         text-transform: uppercase;
     }
-
-    .statusGroup {
+    .toggleGroup {
         justify-content: flex-end;
     }
+    .toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+    }
+}
+
+.statusRegistrado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.regStatus_present {
+    background: rgba(43, 182, 115, 0.12);
+    color: var(--color-accent);
+}
+.regStatus_absent {
+    background: rgba(225, 29, 72, 0.1);
+    color: var(--color-error);
+}
+.regStatus_justified {
+    background: rgba(251, 191, 36, 0.12);
+    color: #b45309;
 }

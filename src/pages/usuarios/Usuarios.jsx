@@ -3,7 +3,6 @@ import { api } from "../../services/api";
 import { UsuarioForm } from "../../components/usuarios/UsuarioForm";
 import styles from "./Usuarios.module.css";
 
-// ── Ícones fora do componente para evitar recriação a cada render ──────────
 const IconEdit = () => (
     <svg
         viewBox="0 0 24 24"
@@ -54,14 +53,12 @@ const IconUserPlus = () => (
     </svg>
 );
 
-// ── Componente de badge de perfil isolado ──────────────────────────────────
 function RoleBadge({ perfil }) {
     const label = perfil?.replace("ROLE_", "") ?? "—";
     const modifier = perfil?.toLowerCase() ?? "";
     return <span className={`${styles.roleBadge} ${styles[modifier]}`}>{label}</span>;
 }
 
-// ── Modal de confirmação de exclusão isolado ───────────────────────────────
 function DeleteModal({ usuario, loading, onConfirm, onCancel }) {
     return (
         <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -88,7 +85,6 @@ function DeleteModal({ usuario, loading, onConfirm, onCancel }) {
     );
 }
 
-// ── Componente principal ───────────────────────────────────────────────────
 export function Usuarios() {
     const [view, setView] = useState("lista");
     const [usuarios, setUsuarios] = useState([]);
@@ -142,12 +138,10 @@ export function Usuarios() {
         }
     }, [usuarioToDelete, carregarUsuarios]);
 
-    // ── Early return para a view de cadastro ──────────────────────────────
     if (view === "cadastro") {
         return <UsuarioForm usuarioId={usuarioSelecionadoId} onVoltar={() => setView("lista")} />;
     }
 
-    // ── Conteúdo da tabela ─────────────────────────────────────────────────
     const renderTableBody = () => {
         if (loading) {
             return <div className={styles.feedback}>Carregando profissionais...</div>;
