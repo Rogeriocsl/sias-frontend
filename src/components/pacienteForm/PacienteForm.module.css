@@ -1,0 +1,262 @@
+.container {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    margin: 0 auto;
+    animation: formIn 0.2s ease-out;
+}
+
+.header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0.25rem 0 0 0;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.gridRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.gridRowTriple {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.inputErro {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2;
+}
+
+.inputErro:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.erroTexto {
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 0.15rem;
+    display: block;
+    animation: slideDown 0.12s ease-out;
+}
+
+.input,
+.select {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.875rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #0f172a;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    width: 100%;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: #005b94;
+    box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.1);
+}
+
+.checkboxGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+    background-color: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #334155;
+    cursor: pointer;
+}
+
+.checkboxInput {
+    width: 16px;
+    height: 16px;
+    accent-color: #005b94;
+    cursor: pointer;
+}
+
+.errorAlert {
+    background-color: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.5rem;
+}
+
+.btnCancel {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: none;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #64748b;
+    cursor: pointer;
+    transition:
+        background 0.12s,
+        color 0.12s;
+    text-align: center;
+}
+
+.btnCancel:hover {
+    background-color: #f8fafc;
+    color: #334155;
+}
+
+.btnSubmit {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: #005b94;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.12s;
+    text-align: center;
+}
+
+.btnSubmit:hover {
+    background-color: #004471;
+}
+
+.btnSubmit:disabled,
+.btnCancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@keyframes formIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1.25rem;
+        border-radius: 8px;
+    }
+
+    .gridRow,
+    .gridRowTriple {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .btnCancel,
+    .btnSubmit {
+        width: 100%;
+        padding: 0.75rem 1rem;
+    }
+}
+
+.encaminhamentoCard {
+    background-color: #f8fafc; /* Fundo cinza/azulado bem claro */
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #0284c7; /* Linha azul de destaque na esquerda */
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2.5rem 0; /* Separa bem dos dados de cima e de baixo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.encaminhamentoHeader {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+}
+
+.sectionTitle {
+    font-size: 1.15rem;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+}
+
+.sectionSubtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+}
