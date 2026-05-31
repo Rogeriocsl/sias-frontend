@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import {
     Sidebar,
-    SidebarHeader,
     SidebarNav,
     SidebarSection,
     SidebarItem,
     SidebarSeparator,
     SidebarFooter,
-} from "../../components/ui/sidebar/Sidebar";
-import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "../../components/ui/menu/Menu";
+} from "../../../components/sidebar/Sidebar";
+import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "../../../components/menu/Menu";
 import styles from "./AdminDashboard.module.css";
-import logoImg from "../../assets/logoT.png";
 
-// ── Ícones do Menu ────────────────────────────────────────────────────────────
 const IconGrid = () => (
     <svg
         viewBox="0 0 24 24"
@@ -208,7 +205,6 @@ export function AdminDashboard({ user, signOut }) {
 
     return (
         <div className={styles.layout}>
-            {/* ── Menu Lateral (Sidebar) ── */}
             <Sidebar collapsed={isCollapsed} onCollapsedChange={setIsCollapsed}>
                 <SidebarNav>
                     <SidebarSection label="Principal">
@@ -264,7 +260,6 @@ export function AdminDashboard({ user, signOut }) {
                                 <span className={styles.avatar}>
                                     {(user?.nome?.[0] || user?.login?.[0] || "U").toUpperCase()}
                                 </span>
-                                {/* 🛠️ SEGREDO DO MISTÉRIO: Se fechar a barra, destrói o texto do DOM na hora */}
                                 {!isCollapsed && (
                                     <span className={styles.userInfo}>
                                         <span className={styles.userName}>
@@ -289,7 +284,6 @@ export function AdminDashboard({ user, signOut }) {
                 </SidebarFooter>
             </Sidebar>
 
-            {/* ── Área Direita de Conteúdo Reativo ── */}
             <div className={styles.main}>
                 <header className={styles.topbar}>
                     <div>

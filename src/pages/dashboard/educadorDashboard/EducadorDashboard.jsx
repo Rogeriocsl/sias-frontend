@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button } from "../../components/ui/Button";
-import { Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from "../../components/ui/menu/Menu";
+import { Button } from "../../../components/ui/Button";
+import { Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from "../../../components/menu/Menu";
 import {
     Sidebar,
     SidebarFooter,
@@ -8,7 +8,7 @@ import {
     SidebarNav,
     SidebarSection,
     SidebarSeparator,
-} from "../../components/ui/sidebar/Sidebar";
+} from "../../../components/sidebar/Sidebar";
 import styles from "./EducadorDashboard.module.css";
 
 const IconGrid = () => (

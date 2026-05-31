@@ -1,4 +1,4 @@
-import { Button } from "../Button"; // Certifique-se de ajustar o caminho relativo do seu botão
+import { Button } from "../ui/Button"; // Certifique-se de ajustar o caminho relativo do seu botão
 import styles from "./AccessDenied.module.css";
 
 export function AccessDenied({ login, onSignOut }) {
