@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, } from "react";
+import { useState, useCallback } from "react";
 import {
     Sidebar,
     SidebarNav,
@@ -11,6 +11,7 @@ import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } fr
 import styles from "./AdminDashboard.module.css";
 import { Usuarios } from "../../../pages/usuarios/Usuarios";
 import { Pacientes } from "../../../pages/pacientes/Pacientes";
+import { Turmas } from "../../../pages/turmas/Turmas";
 
 const IconGrid = () => (
     <svg
@@ -132,6 +133,24 @@ const IconTrendUp = () => (
     </svg>
 );
 
+const IconCalendar = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={18}
+        height={18}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
+
 const METRICS = [
     {
         title: "Total de Usuários",
@@ -139,25 +158,14 @@ const METRICS = [
         sub: "Profissionais cadastrados",
         badge: { label: "+12%", variant: "success" },
     },
-    {
-        title: "Médicos Ativos",
-        value: "42",
-        sub: "Módulo Saúde integrado",
-    },
-    {
-        title: "Educadores Físicos",
-        value: "56",
-        sub: "Acompanhamento comunitário",
-    },
-    {
-        title: "Encaminhamentos",
-        value: "1.240",
-        sub: "Pontes de dados geradas",
-    },
+    { title: "Médicos Ativos", value: "42", sub: "Módulo Saúde integrado" },
+    { title: "Educadores Físicos", value: "56", sub: "Acompanhamento comunitário" },
+    { title: "Encaminhamentos", value: "1.240", sub: "Pontes de dados geradas" },
 ];
 
 const NAV_PRINCIPAL = [
     { id: "dashboard", label: "Dashboard", icon: <IconGrid /> },
+    { id: "turmas", label: "Turmas", icon: <IconCalendar /> },
     { id: "usuarios", label: "Cadastro de Usuários", icon: <IconUsers /> },
     { id: "pacientes", label: "Cadastro de Pacientes", icon: <IconUsers /> },
     { id: "relatorios", label: "Relatórios", icon: <IconFileText /> },
@@ -204,6 +212,7 @@ function Placeholder({ label }) {
 const PAGE_MAP = {
     dashboard: <DashboardHome />,
     usuarios: <Usuarios />,
+    turmas: <Turmas />,
     pacientes: <Pacientes />,
     relatorios: <Placeholder label="Tela de Relatórios" />,
     notificacoes: <Placeholder label="Tela de Notificações" />,
@@ -213,75 +222,6 @@ const PAGE_MAP = {
 export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [selectedTurma, setSelectedTurma] = useState(null);
-    const [turmas, setTurmas] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [presencas, setPresencas] = useState({});
-    const [pacientes, setPacientes] = useState([]);
-
-    useEffect(() => {
-        async function carregarTurmas() {
-            try {
-                const response = await fetch("http://localhost:8080/api/turmas");
-
-                if (!response.ok) {
-                    throw new Error("Erro ao buscar turmas");
-                }
-
-                const data = await response.json();
-                setTurmas(data);
-            } catch (error) {
-                console.error("Erro ao carregar turmas:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        carregarTurmas();
-    }, []);
-
-    async function salvarPresencas() {
-        try {
-            for (const pacienteId in presencas) {
-                const response = await fetch("http://localhost:8080/api/presenca", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        pacienteId: Number(pacienteId),
-                        dataPresenca: new Date().toISOString().split("T")[0],
-                        status: presencas[pacienteId],
-                        observacao: "",
-                        atividade: "GINASTICA"
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP ${response.status}`);
-                }
-            }
-            alert("Presenças salvas com sucesso!");
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao salvar presença");
-        }
-    }
-
-    async function carregandoPacienteDasTurmas(turmaId) {
-        try {
-            const response = await fetch(`http://localhost:8080/api/pacientes/turmas/${turmaId}`);
-
-            if (!response.ok) {
-                throw new Error("Erro ao buscar pacientes");
-            }
-
-            const data = await response.json();
-            console.log("Pacientes:", data);
-            setPacientes(data);
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     const navigate = useCallback((page) => setActivePage(page), []);
 
@@ -354,257 +294,6 @@ export function AdminDashboard({ user, signOut }) {
                         </p>
                     </div>
                 </header>
-                
-                <div className={styles.content}>
-                    {activePage === "dashboard" && (
-                        <div className={styles.container}>
-
-                            {/* Grid das Turmas */}
-                            <h2 className={styles.classTitle}>Turmas</h2>
-                            {loading ? (
-                                <p>Carregando turmas...</p>
-                            ) : turmas.length === 0 ? (
-                                <div>
-                                    <h3>Nenhuma turma encontrada</h3>
-                                    <p>Cadastre uma nova turma para começar.</p>
-                                </div>
-                            ) : (
-                                <div className={styles.metricsGrid}>
-                                    {turmas.map((turma) => (
-                                        <div
-                                            key={turma.id}
-                                            className={styles.card}
-                                            onClick={() => {
-                                                setSelectedTurma(turma);
-                                                carregandoPacienteDasTurmas(turma.id);
-                                                setActivePage("turma");
-                                            }}
-                                        >
-                                            <span className={styles.classCardTitle}>{turma.nome}</span>
-                                            <span className={styles.classSub}>{turma.educador}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                           
-                            {/* Grid de Métricas */}
-                            <div className={styles.metricsGrid}>
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Total de Usuários</span>
-                                        <span className={`${styles.badge} ${styles.badgeSuccess}`}>
-                                            <IconTrendUp /> +12%
-                                        </span>
-                                    </div>
-                                    <div className={styles.cardValue}>148</div>
-                                    <p className={styles.cardSub}>Profissionais cadastrados</p>
-                                </div>
-
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Médicos Ativos</span>
-                                    </div>
-                                    <div className={styles.cardValue}>42</div>
-                                    <p className={styles.cardSub}>Módulo Saúde integrado</p>
-                                </div>
-
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Educadores Físicos</span>
-                                    </div>
-                                    <div className={styles.cardValue}>56</div>
-                                    <p className={styles.cardSub}>Acompanhamento comunitário</p>
-                                </div>
-
-                                <div className={styles.card}>
-                                    <div className={styles.cardHeader}>
-                                        <span className={styles.cardTitle}>Encaminhamentos</span>
-                                    </div>
-                                    <div className={styles.cardValue}>1,240</div>
-                                    <p className={styles.cardSub}>Pontes de dados geradas</p>
-                                </div>
-                            </div>
-
-                            {/* Tabela de Registros */}
-                            <div className={styles.tableSection}>
-                                <h3 className={styles.sectionTitle}>Últimos Usuários Cadastrados</h3>
-                                <div className={styles.tableWrapper}>
-                                    <table className={styles.table}>
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>E-mail / Login</th>
-                                                <th>Perfil de Acesso</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <strong>Dr. Alexandre Souza</strong>
-                                                </td>
-                                                <td>alexandre.med@sias.com</td>
-                                                <td>
-                                                    <span className={`${styles.roleBadge} ${styles.roleMedico}`}>
-                                                        MÉDICO
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={styles.statusActive}>Ativo</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <strong>Profª Roberta Lima</strong>
-                                                </td>
-                                                <td>roberta.fit@sias.com</td>
-                                                <td>
-                                                    <span className={`${styles.roleBadge} ${styles.roleProfessor}`}>
-                                                        EDUCADOR
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={styles.statusActive}>Ativo</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <strong>Sias Gestor</strong>
-                                                </td>
-                                                <td>sias@admin.com</td>
-                                                <td>
-                                                    <span className={`${styles.roleBadge} ${styles.roleAdmin}`}>
-                                                        ADMIN
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className={styles.statusActive}>Ativo</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Página das turmas */}
-                    {activePage === "turma" && (
-                        <div>
-                            <div className={styles.tableSection}>
-                                <div className={styles.classTableTitle}>
-                                    <h3 className={styles.sectionTitle}>{selectedTurma.nome}</h3>
-                                    <button onClick={() => {setActivePage("criar paciente")}} className={styles.createButton}>
-                                        + Novo Paciente
-                                    </button>
-                                </div>
-                                <div className={styles.tableWrapper}>
-                                    <table className={styles.table}>
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>Gênero</th>
-                                                <th>CPF</th>
-                                                <th>Presença</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {pacientes.map((paciente) => (
-                                                <tr key={paciente.id}>
-                                                    <td><strong>{paciente.nome}</strong></td>
-                                                    <td>{paciente.genero}</td>
-                                                    <td>{paciente.cpf}</td>
-                                                    <td>
-                                                        <div className={styles.statusGroup}>
-                                                            <label>
-                                                                <input 
-                                                                    type="radio"
-                                                                    name={`presenca-${paciente.id}`}
-                                                                    value="PRESENTE"
-                                                                    checked={presencas[paciente.id] === "PRESENTE"}
-                                                                    onChange={(e) =>
-                                                                        setPresencas({
-                                                                            ...presencas,
-                                                                            [paciente.id]: e.target.value
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Presente
-                                                            </label>
-                                                            <label>
-                                                                <input 
-                                                                    type="radio"
-                                                                    name={`presenca-${paciente.id}`}
-                                                                    value="FALTA"
-                                                                    checked={presencas[paciente.id] === "FALTA"}
-                                                                    onChange={(e) =>
-                                                                        setPresencas({
-                                                                            ...presencas,
-                                                                            [paciente.id]: e.target.value
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Falta
-                                                            </label>
-                                                            <label>
-                                                                <input 
-                                                                    type="radio"
-                                                                    className={styles.presenceButton}
-                                                                    name={`presenca-${paciente.id}`}
-                                                                    value="FALTA_JUSTIFICADA"
-                                                                    checked={presencas[paciente.id] === "FALTA_JUSTIFICADA"}
-                                                                    onChange={(e) =>
-                                                                        setPresencas({
-                                                                            ...presencas,
-                                                                            [paciente.id]: e.target.value
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Falta Justificada
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <button onClick={() => {setActivePage("editar paciente")}} className={styles.editButton}>
-                                                            Editar Paciente
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div className={styles.actionButtons}>
-                                <button className={styles.backButton} onClick={() => setActivePage("dashboard")}>
-                                    Voltar
-                                </button>
-                                <button className={styles.saveButton} onClick={salvarPresencas}>
-                                Salvar Presenças
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {activePage === "criar paciente" && (
-                        <button className={styles.backButton} onClick={() => setActivePage("turma")}>
-                            Voltar
-                        </button>
-                    )}
-
-                    {activePage === "editar paciente" && (
-                        <button className={styles.backButton} onClick={() => setActivePage("turma")}>
-                            Voltar
-                        </button>
-                    )}
-
-                    {activePage !== "dashboard" && (
-                        <div className={styles.placeholder}>
-                            Página: <strong>{activePage}</strong>
-                        </div>
-                    )}
-                </div>
 
                 <div className={styles.content}>{PAGE_MAP[activePage] ?? null}</div>
             </div>

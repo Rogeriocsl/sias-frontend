@@ -1,0 +1,346 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 0.2s ease-out both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.pageTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    margin: 0;
+}
+
+.pageSubtitle {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0;
+}
+
+/* ── Feedback ──────────────────────────────────────────────────────────── */
+.feedback {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.feedbackError {
+    color: var(--color-error);
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    border-left: 4px solid var(--color-error);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ── Grid de turmas ────────────────────────────────────────────────────── */
+.turmasGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.turmaCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.5rem;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    text-align: left;
+    transition:
+        box-shadow 0.15s,
+        transform 0.15s,
+        border-color 0.15s;
+}
+
+.turmaCard:hover {
+    box-shadow: 0 4px 16px rgba(0, 91, 148, 0.12);
+    border-color: var(--color-brand);
+    transform: translateY(-2px);
+}
+
+.turmaCard:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.turmaNome {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+}
+
+.turmaEducador {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+/* ── Table card (chamada) ──────────────────────────────────────────────── */
+.tableCard {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.tableCardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background: #f8fafc;
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    margin: 0;
+}
+
+.turmaEducadorBadge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-accent-mid);
+    background: rgba(0, 141, 165, 0.08);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+/* ── Tabela ────────────────────────────────────────────────────────────── */
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.table thead {
+    background-color: #f8fafc;
+}
+
+.table th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--color-text-body);
+    vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.table tbody tr {
+    transition: background-color 0.12s;
+}
+.table tbody tr:hover {
+    background-color: rgba(0, 91, 148, 0.03);
+}
+
+/* ── Radios de presença ────────────────────────────────────────────────── */
+.statusGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.radioLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--color-text-body);
+    cursor: pointer;
+    user-select: none;
+}
+
+.radioLabel input[type="radio"] {
+    accent-color: var(--color-brand);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+/* ── Botões de ação ────────────────────────────────────────────────────── */
+.actionButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+.btnVoltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-card);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        color 0.15s,
+        background 0.15s;
+}
+.btnVoltar:hover {
+    border-color: #b0b7c9;
+    color: var(--color-text-body);
+    background: #f8fafc;
+}
+
+.btnSalvar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-brand);
+    color: var(--color-brand-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        transform 0.12s,
+        box-shadow 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 91, 148, 0.3);
+}
+.btnSalvar:hover:not(:disabled) {
+    background: #004471;
+    box-shadow: 0 4px 12px rgba(0, 91, 148, 0.35);
+    transform: translateY(-1px);
+}
+.btnSalvar:active:not(:disabled) {
+    transform: translateY(0);
+}
+.btnSalvar:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btnSalvar:focus-visible,
+.btnVoltar:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+/* ── Responsivo ────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .turmasGrid {
+        grid-template-columns: 1fr;
+    }
+    .actionButtons {
+        flex-direction: column-reverse;
+    }
+    .btnVoltar,
+    .btnSalvar {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table,
+    .table thead,
+    .table tbody,
+    .table th,
+    .table td,
+    .table tr {
+        display: block;
+    }
+
+    .table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .table tr {
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        background: var(--color-card);
+        padding: 0.25rem 0;
+    }
+
+    .table td {
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        position: relative;
+        padding-left: 40%;
+        text-align: right;
+    }
+    .table td:last-child {
+        border-bottom: none;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 35%;
+        text-align: left;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+    }
+
+    .statusGroup {
+        justify-content: flex-end;
+    }
+}
