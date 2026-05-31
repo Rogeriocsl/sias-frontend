@@ -1,0 +1,327 @@
+:root {
+    --clr-accent: var(--color-brand);
+    --clr-accent-hover: #004471;
+    --clr-surface: var(--color-card);
+    --clr-border: var(--color-border);
+    --clr-border-light: #f1f5f9;
+    --clr-text-primary: var(--color-text-strong);
+    --clr-text-body: var(--color-text-body);
+    --clr-text-secondary: var(--color-text-muted);
+    --clr-text-muted: #94a3b8;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.layout {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    background-color: var(--clr-surface);
+    border-bottom: 1px solid var(--clr-border);
+    min-height: 64px;
+    flex-shrink: 0; /* nunca encolhe */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.pageTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clr-text-primary);
+    margin: 0;
+    white-space: nowrap;
+}
+
+.pageSubtitle {
+    font-size: 0.825rem;
+    color: var(--clr-text-secondary);
+    margin: 0.15rem 0 0;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    min-width: 0;
+}
+
+.placeholder {
+    font-size: 0.875rem;
+    color: var(--clr-text-secondary);
+    background-color: var(--clr-surface);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--clr-border);
+}
+
+.userTrigger {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s ease;
+}
+.userTrigger:hover {
+    background-color: rgba(0, 91, 148, 0.06);
+}
+
+.collapsedTrigger {
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--color-brand);
+    color: var(--color-brand-text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.userName {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--color-text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userRole {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.logoImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeIn 0.2s ease-out both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-card);
+    transition:
+        box-shadow 0.15s,
+        transform 0.15s;
+}
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cardTitle {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--clr-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.cardValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--clr-text-primary);
+    line-height: 1.1;
+}
+
+.cardSub {
+    font-size: 0.775rem;
+    color: var(--clr-text-muted);
+    margin: 0;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.badge_success {
+    background-color: rgba(43, 182, 115, 0.12);
+    color: var(--color-accent);
+}
+.badge_warning {
+    background-color: rgba(251, 191, 36, 0.12);
+    color: #b45309;
+}
+.badge_danger {
+    background-color: rgba(225, 29, 72, 0.1);
+    color: var(--color-error);
+}
+
+.tableSection {
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--clr-text-primary);
+    margin: 0 0 1.25rem;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.table thead {
+    background-color: #f8fafc;
+}
+
+.table th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--clr-border);
+    color: var(--clr-text-secondary);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--clr-border-light);
+    color: var(--clr-text-body);
+    vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.table tbody tr {
+    transition: background-color 0.12s;
+}
+.table tbody tr:hover {
+    background-color: rgba(0, 91, 148, 0.03);
+}
+
+.roleBadge {
+    display: inline-flex;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.roleAdmin {
+    background-color: rgba(0, 91, 148, 0.1);
+    color: var(--color-brand);
+}
+.roleMedico {
+    background-color: rgba(0, 141, 165, 0.12);
+    color: var(--color-accent-mid);
+}
+.roleProfessor {
+    background-color: rgba(43, 182, 115, 0.12);
+    color: var(--color-accent);
+}
+
+.statusActive {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--color-accent);
+    font-size: 0.825rem;
+}
+.statusActive::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+}

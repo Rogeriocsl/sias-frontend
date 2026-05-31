@@ -1,4 +1,4 @@
-import { Button } from "../Button"; // Certifique-se de ajustar o caminho relativo do seu botão
+import { Button } from "../ui/Button";
 import styles from "./AccessDenied.module.css";
 
 export function AccessDenied({ login, onSignOut }) {
@@ -12,7 +12,6 @@ export function AccessDenied({ login, onSignOut }) {
                     você no sistema.
                 </p>
 
-                {/* Usando o nosso botão base padronizado */}
                 <Button type="button" variant="outline" onClick={onSignOut} className="w-full">
                     Voltar para o Login
                 </Button>

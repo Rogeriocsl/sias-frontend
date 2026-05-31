@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { Button } from "../../components/ui/Button";
-import { Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from "../../components/ui/menu/Menu";
+import { useState, useCallback } from "react";
 import {
     Sidebar,
-    SidebarFooter,
-    SidebarItem,
     SidebarNav,
     SidebarSection,
+    SidebarItem,
     SidebarSeparator,
-} from "../../components/ui/sidebar/Sidebar";
-import styles from "./SaudeDashboard.module.css";
+    SidebarFooter,
+} from "../../../components/sidebar/Sidebar";
+import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "../../../components/menu/Menu";
+import styles from "./AdminDashboard.module.css";
+import { Usuarios } from "../../../pages/usuarios/Usuarios";
+import { Pacientes } from "../../../pages/pacientes/Pacientes";
 
 const IconGrid = () => (
     <svg
@@ -124,70 +125,144 @@ const IconLogout = () => (
         <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
 );
+const IconTrendUp = () => (
+    <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2.5}>
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+        <polyline points="17 6 23 6 23 12" />
+    </svg>
+);
 
-export function SaudeDashboard({ user, signOut }) {
+const METRICS = [
+    {
+        title: "Total de Usuários",
+        value: "148",
+        sub: "Profissionais cadastrados",
+        badge: { label: "+12%", variant: "success" },
+    },
+    {
+        title: "Médicos Ativos",
+        value: "42",
+        sub: "Módulo Saúde integrado",
+    },
+    {
+        title: "Educadores Físicos",
+        value: "56",
+        sub: "Acompanhamento comunitário",
+    },
+    {
+        title: "Encaminhamentos",
+        value: "1.240",
+        sub: "Pontes de dados geradas",
+    },
+];
+
+const NAV_PRINCIPAL = [
+    { id: "dashboard", label: "Dashboard", icon: <IconGrid /> },
+    { id: "usuarios", label: "Cadastro de Usuários", icon: <IconUsers /> },
+    { id: "pacientes", label: "Cadastro de Pacientes", icon: <IconUsers /> },
+    { id: "relatorios", label: "Relatórios", icon: <IconFileText /> },
+];
+
+const NAV_SISTEMA = [
+    { id: "notificacoes", label: "Notificações", icon: <IconBell />, badge: 12 },
+    { id: "configuracoes", label: "Configurações", icon: <IconSettings /> },
+];
+
+function MetricCard({ title, value, sub, badge }) {
+    return (
+        <div className={styles.card}>
+            <div className={styles.cardHeader}>
+                <span className={styles.cardTitle}>{title}</span>
+                {badge && (
+                    <span className={`${styles.badge} ${styles[`badge_${badge.variant}`]}`}>
+                        <IconTrendUp /> {badge.label}
+                    </span>
+                )}
+            </div>
+            <div className={styles.cardValue}>{value}</div>
+            <p className={styles.cardSub}>{sub}</p>
+        </div>
+    );
+}
+
+function DashboardHome() {
+    return (
+        <div className={styles.container}>
+            <div className={styles.metricsGrid}>
+                {METRICS.map((m) => (
+                    <MetricCard key={m.title} {...m} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function Placeholder({ label }) {
+    return <div className={styles.placeholder}>{label}</div>;
+}
+
+const PAGE_MAP = {
+    dashboard: <DashboardHome />,
+    usuarios: <Usuarios />,
+    pacientes: <Pacientes />,
+    relatorios: <Placeholder label="Tela de Relatórios" />,
+    notificacoes: <Placeholder label="Tela de Notificações" />,
+    configuracoes: <Placeholder label="Tela de Configurações" />,
+};
+
+export function AdminDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const navigate = useCallback((page) => setActivePage(page), []);
+
+    const displayName = user?.nome || user?.login || "Usuário";
+    const avatarChar = (user?.nome?.[0] || user?.login?.[0] || "U").toUpperCase();
 
     return (
         <div className={styles.layout}>
-            <Sidebar defaultCollapsed={false}>
+            {/* ── Sidebar ── */}
+            <Sidebar collapsed={isCollapsed} onCollapsedChange={setIsCollapsed}>
                 <SidebarNav>
                     <SidebarSection label="Principal">
-                        <SidebarItem
-                            icon={<IconGrid />}
-                            active={activePage === "dashboard"}
-                            onClick={() => setActivePage("dashboard")}
-                        >
-                            Dashboard
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconUsers />}
-                            active={activePage === "usuarios"}
-                            badge={3}
-                            onClick={() => setActivePage("usuarios")}
-                        >
-                            Usuários
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconFileText />}
-                            active={activePage === "relatorios"}
-                            onClick={() => setActivePage("relatorios")}
-                        >
-                            Relatórios
-                        </SidebarItem>
+                        {NAV_PRINCIPAL.map(({ id, label, icon }) => (
+                            <SidebarItem key={id} icon={icon} active={activePage === id} onClick={() => navigate(id)}>
+                                {label}
+                            </SidebarItem>
+                        ))}
                     </SidebarSection>
 
                     <SidebarSeparator />
 
                     <SidebarSection label="Sistema">
-                        <SidebarItem
-                            icon={<IconBell />}
-                            active={activePage === "notificacoes"}
-                            badge={12}
-                            onClick={() => setActivePage("notificacoes")}
-                        >
-                            Notificações
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconSettings />}
-                            active={activePage === "configuracoes"}
-                            onClick={() => setActivePage("configuracoes")}
-                        >
-                            Configurações
-                        </SidebarItem>
+                        {NAV_SISTEMA.map(({ id, label, icon, badge }) => (
+                            <SidebarItem
+                                key={id}
+                                icon={icon}
+                                active={activePage === id}
+                                badge={badge}
+                                onClick={() => navigate(id)}
+                            >
+                                {label}
+                            </SidebarItem>
+                        ))}
                     </SidebarSection>
                 </SidebarNav>
 
                 <SidebarFooter>
                     <Menu placement="top-start">
                         <MenuTrigger showChevron={false}>
-                            <div className={styles.userTrigger}>
-                                <span className={styles.avatar}>{(user?.login?.[0] || "U").toUpperCase()}</span>
-                                <span className={styles.userInfo}>
-                                    <span className={styles.userName}>{user?.login || "Usuário"}</span>
-                                </span>
+                            <div className={`${styles.userTrigger} ${isCollapsed ? styles.collapsedTrigger : ""}`}>
+                                <span className={styles.avatar}>{avatarChar}</span>
+                                {!isCollapsed && (
+                                    <span className={styles.userInfo}>
+                                        <span className={styles.userName}>{displayName}</span>
+                                        <span className={styles.userRole}>Administrador</span>
+                                    </span>
+                                )}
                             </div>
                         </MenuTrigger>
+
                         <MenuContent>
                             <MenuLabel>Minha Conta</MenuLabel>
                             <MenuItem icon={<IconUser />}>Perfil</MenuItem>
@@ -204,18 +279,14 @@ export function SaudeDashboard({ user, signOut }) {
             <div className={styles.main}>
                 <header className={styles.topbar}>
                     <div>
-                        <h1 className={styles.pageTitle}>Dashboard Educador </h1>
+                        <h1 className={styles.pageTitle}>Painel Administrativo ⚙️</h1>
                         <p className={styles.pageSubtitle}>
-                            Bem-vindo, <strong>{user?.login || "Usuário"}</strong>
+                            Bem-vindo, <strong>{displayName}</strong>
                         </p>
                     </div>
                 </header>
 
-                <div className={styles.content}>
-                    <p className={styles.placeholder}>
-                        Página: <strong>{activePage}</strong>
-                    </p>
-                </div>
+                <div className={styles.content}>{PAGE_MAP[activePage] ?? null}</div>
             </div>
         </div>
     );
