@@ -340,3 +340,38 @@
 .saveButton:hover {
     background: #005b94;
 }
+
+.classTableTitle {
+    display: flex;
+    justify-content: space-between;
+}
+
+.createButton {
+    border: none;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: rgba(34, 197, 94, 0.18);
+    color: #138f41;
+}
+
+.createButton:hover {
+    background-color: rgba(34, 197, 94, 0.550);
+}
+
+.editButton {
+    border: none;
+    border-radius: 12px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: rgba(200, 159, 35, 0.250);
+    color: rgb(177, 140, 27);
+}
+
+.editButton:hover {
+    background-color: rgba(200, 159, 35, 0.500);
+}

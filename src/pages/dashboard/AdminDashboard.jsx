@@ -303,6 +303,7 @@ export function AdminDashboard({ user, signOut }) {
                 <div className={styles.content}>
                     {activePage === "dashboard" && (
                         <div className={styles.container}>
+
                             {/* Grid das Turmas */}
                             <h2 className={styles.classTitle}>Turmas</h2>
                             {loading ? (
@@ -431,7 +432,12 @@ export function AdminDashboard({ user, signOut }) {
                     {activePage === "turma" && (
                         <div>
                             <div className={styles.tableSection}>
-                                <h3 className={styles.sectionTitle}>{selectedTurma.nome}</h3>
+                                <div className={styles.classTableTitle}>
+                                    <h3 className={styles.sectionTitle}>{selectedTurma.nome}</h3>
+                                    <button onClick={() => {setActivePage("criar paciente")}} className={styles.createButton}>
+                                        + Novo Paciente
+                                    </button>
+                                </div>
                                 <div className={styles.tableWrapper}>
                                     <table className={styles.table}>
                                         <thead>
@@ -440,6 +446,7 @@ export function AdminDashboard({ user, signOut }) {
                                                 <th>Gênero</th>
                                                 <th>CPF</th>
                                                 <th>Presença</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -498,6 +505,11 @@ export function AdminDashboard({ user, signOut }) {
                                                             </label>
                                                         </div>
                                                     </td>
+                                                    <td>
+                                                        <button onClick={() => {setActivePage("editar paciente")}} className={styles.editButton}>
+                                                            Editar Paciente
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -513,6 +525,18 @@ export function AdminDashboard({ user, signOut }) {
                                 </button>
                             </div>
                         </div>
+                    )}
+
+                    {activePage === "criar paciente" && (
+                        <button className={styles.backButton} onClick={() => setActivePage("turma")}>
+                            Voltar
+                        </button>
+                    )}
+
+                    {activePage === "editar paciente" && (
+                        <button className={styles.backButton} onClick={() => setActivePage("turma")}>
+                            Voltar
+                        </button>
                     )}
 
                     {activePage !== "dashboard" && (
