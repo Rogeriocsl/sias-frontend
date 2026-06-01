@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../../services/api";
 import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
+import { ConfirmModal } from "../../components/modal/ConfirmModal";
 import { PacienteDetalhes } from "./PacienteDetalhes";
 import styles from "./Pacientes.module.css";
 
@@ -22,6 +23,7 @@ const IconUserPlus = () => (
         <line x1="22" y1="11" x2="16" y2="11" />
     </svg>
 );
+
 const IconEdit = () => (
     <svg
         viewBox="0 0 24 24"
@@ -37,6 +39,7 @@ const IconEdit = () => (
         <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z" />
     </svg>
 );
+
 const IconTrash = () => (
     <svg
         viewBox="0 0 24 24"
@@ -53,56 +56,85 @@ const IconTrash = () => (
     </svg>
 );
 
+const GENERO_LABEL = {
+    MASCULINO: "Masc",
+    FEMININO: "Fem",
+};
+
+function formatarGenero(genero) {
+    return GENERO_LABEL[genero] ?? "Outro";
+}
+
+function formatarCondicao(cond) {
+    return cond.replace(/_/g, " ");
+}
+
+function CondicoesBadges({ condicoes }) {
+    if (!condicoes?.length) {
+        return <span className={styles.noCond}>Nenhuma</span>;
+    }
+    return (
+        <div className={styles.condicoesContainer}>
+            {condicoes.map((cond, idx) => (
+                <span key={idx} className={styles.condBadge}>
+                    {formatarCondicao(cond)}
+                </span>
+            ))}
+        </div>
+    );
+}
+
 export function Pacientes() {
-    const [view, setView] = useState("lista"); // "lista" ou "cadastro"
+    const [view, setView] = useState("lista");
     const [pacientes, setPacientes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [pacienteSelecionadoId, setPacienteSelecionadoId] = useState(null);
+    const [pacienteParaDeletar, setPacienteParaDeletar] = useState(null); // objeto { id, nome }
+    const [loadingDelete, setLoadingDelete] = useState(false);
 
-    const carregarPacientes = () => {
+    const carregarPacientes = useCallback(async () => {
         setLoading(true);
-        api.get("/api/pacientes")
-            .then((response) => setPacientes(response.data))
-            .catch((err) => console.error("Erro ao listar pacientes:", err))
-            .finally(() => setLoading(false));
-    };
+        setError(null);
+        try {
+            const { data } = await api.get("/api/pacientes");
+            setPacientes(data);
+        } catch (err) {
+            console.error("Erro ao listar pacientes:", err);
+            setError("Não foi possível carregar os pacientes. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (view === "lista") {
             carregarPacientes();
             setPacienteSelecionadoId(null);
         }
-    }, [view]);
+    }, [view, carregarPacientes]);
 
-    const handleEditar = (id) => {
+    const handleEditar = useCallback((id) => {
         setPacienteSelecionadoId(id);
         setView("cadastro");
-    };
+     
+    },[]);
 
-    const handleDetalhes = (id) => {
-        setPacienteSelecionadoId(id);
-        setView("detalhes");
-    };
-
-    const handleDeletar = async (id) => {
-        if (window.confirm("Deseja realmente remover o prontuário deste paciente do SIAS?")) {
-            try {
-                await api.delete(`/api/pacientes/${id}`);
-                carregarPacientes();
-            } catch (err) {
-                alert("Erro ao remover o paciente.");
-            }
+    const handleConfirmarExclusao = useCallback(async () => {
+        if (!pacienteParaDeletar) return;
+        setLoadingDelete(true);
+        try {
+            await api.delete(`/api/pacientes/${pacienteParaDeletar.id}`);
+            setPacienteParaDeletar(null);
+            await carregarPacientes();
+        } catch (err) {
+            console.error("Erro ao remover paciente:", err);
+            setError("Erro ao remover o paciente. Ele pode estar vinculado a outros registros.");
+            setPacienteParaDeletar(null);
+        } finally {
+            setLoadingDelete(false);
         }
-    };
-
-    if (view === "detalhes") {
-        return (
-            <PacienteDetalhes
-                pacienteId={pacienteSelecionadoId}
-                onVoltar={() => setView("lista")}
-            />
-        );
-    }
+    }, [pacienteParaDeletar, carregarPacientes]);
 
     if (view === "cadastro") {
         return <PacienteForm pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
@@ -177,20 +209,10 @@ export function Pacientes() {
                                                 <button
                                                     className={styles.btnEdit}
                                                     onClick={() => handleEditar(pac.id)}
-                                                    title="Ver detalhes"
-                                                >
-                                                    Detalhes
-                                                </button>
-
-                                                <button
-                                                   className={styles.btnEdit}
-                                                   onClick={() => handleEditar(pac.id)}
-                                                   title="Editar Paciente"
-
+                                                    title="Editar Paciente"
                                                 >
                                                     <IconEdit />
                                                 </button>
-                                                
                                                 <button
                                                     className={styles.btnDelete}
                                                     onClick={() => handleDeletar(pac.id)}
@@ -207,6 +229,21 @@ export function Pacientes() {
                     </div>
                 )}
             </div>
+
+            <div className={styles.tableCard}>{renderConteudo()}</div>
+
+            <ConfirmModal
+                isOpen={!!pacienteParaDeletar}
+                title="Remover Prontuário Clínico ⚠️"
+                message={
+                    pacienteParaDeletar
+                        ? `Tem certeza que deseja remover o prontuário de "${pacienteParaDeletar.nome}"? Esta ação é irreversível e apagará todo o histórico de consultas e avaliações físicas no SIAS.`
+                        : ""
+                }
+                onConfirm={handleConfirmarExclusao}
+                onCancel={() => setPacienteParaDeletar(null)}
+                loading={loadingDelete}
+            />
         </div>
     );
 }

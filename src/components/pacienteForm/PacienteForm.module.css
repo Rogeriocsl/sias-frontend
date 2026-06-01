@@ -40,7 +40,6 @@
     gap: 1.25rem;
 }
 
-/* Grid para os campos menores (Telefone, Gênero, Tipo Sanguíneo) */
 .gridRowTriple {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -57,6 +56,24 @@
     font-size: 0.8rem;
     font-weight: 600;
     color: #334155;
+}
+
+.inputErro {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2;
+}
+
+.inputErro:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.erroTexto {
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 0.15rem;
+    display: block;
+    animation: slideDown 0.12s ease-out;
 }
 
 .input,
@@ -80,7 +97,6 @@
     box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.1);
 }
 
-/* ── Checkbox Grid para as Comorbidades ── */
 .checkboxGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -103,11 +119,10 @@
 .checkboxInput {
     width: 16px;
     height: 16px;
-    accent-color: #005b94; /* Deixa o check azul padrão do SIAS */
+    accent-color: #005b94;
     cursor: pointer;
 }
 
-/* ── Alerta de Erros ── */
 .errorAlert {
     background-color: #fef2f2;
     border: 1px solid #fca5a5;
@@ -118,7 +133,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* ── Botões de Ação ── */
 .actions {
     display: flex;
     align-items: center;
@@ -183,7 +197,17 @@
     }
 }
 
-/* ── 📱 RESPONSIVIDADE MOBILE ── */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 640px) {
     .container {
         padding: 1.25rem;
@@ -206,4 +230,33 @@
         width: 100%;
         padding: 0.75rem 1rem;
     }
+}
+
+.encaminhamentoCard {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #0284c7;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2.5rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.encaminhamentoHeader {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+}
+
+.sectionTitle {
+    font-size: 1.15rem;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+}
+
+.sectionSubtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
 }

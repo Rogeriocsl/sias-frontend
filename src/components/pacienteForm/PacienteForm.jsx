@@ -13,12 +13,17 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
         genero: "",
         tipoSanguineo: "",
         unidadeId: "",
+        turmaId: "",
         condicoesSaude: [],
+        dataEncaminhamento: new Date().toISOString().split("T")[0],
+        observacoes: "",
     });
 
     const [unidades, setUnidades] = useState([]);
+    const [turmas, setTurmas] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [erros, setErros] = useState({});
 
     useEffect(() => {
         const carregarDadosIniciais = async () => {
@@ -26,22 +31,34 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             setError("");
             try {
                 const resUnidades = await api.get("/api/unidade");
+                const resTurmas = await api.get("/api/turmas");
 
                 setUnidades(resUnidades.data);
+                setTurmas(resTurmas.data);
 
                 if (isEdit) {
                     const resPaciente = await api.get(`/api/pacientes/${pacienteId}`);
                     const pac = resPaciente.data;
 
+                    const ultimoEncaminhamento =
+                        pac.encaminhamentos && pac.encaminhamentos.length > 0
+                            ? pac.encaminhamentos[pac.encaminhamentos.length - 1]
+                            : null;
+
                     setFormData({
-                        nome: pac.nome,
-                        cpf: pac.cpf,
-                        dataNascimento: pac.dataNascimento,
-                        telefone: pac.telefone,
-                        genero: pac.genero,
+                        nome: pac.nome || "",
+                        cpf: pac.cpf || "",
+                        dataNascimento: pac.dataNascimento || "",
+                        telefone: pac.telefone || "",
+                        genero: pac.genero || "",
                         tipoSanguineo: pac.tipoSanguineo || "",
-                        unidadeId: pac.unidadeId,
+                        unidadeId: pac.unidadeId || "",
+                        turmaId: pac.turmaId || "",
                         condicoesSaude: pac.condicoesSaude || [],
+                        dataEncaminhamento: ultimoEncaminhamento
+                            ? ultimoEncaminhamento.dataEncaminhamento
+                            : new Date().toISOString().split("T")[0],
+                        observacoes: ultimoEncaminhamento ? ultimoEncaminhamento.observacoes : "",
                     });
                 }
             } catch (err) {
@@ -54,9 +71,75 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
 
         carregarDadosIniciais();
     }, [pacienteId, isEdit]);
+
+    const validarCampo = (name, value) => {
+        let erroMensagem = "";
+
+        if (name === "nome") {
+            if (!value.trim()) erroMensagem = "O nome completo é obrigatório.";
+            else if (value.trim().split(" ").length < 2) erroMensagem = "Por favor, insira o nome e o sobrenome.";
+        }
+
+        if (name === "cpf") {
+            const numerosCpf = value.replace(/\D/g, "");
+            if (!numerosCpf) erroMensagem = "O CPF é obrigatório.";
+            else if (numerosCpf.length !== 11) erroMensagem = "O CPF deve conter exatamente 11 dígitos.";
+            else if (/^(\d)\1{10}$/.test(numerosCpf)) erroMensagem = "CPF inválido.";
+        }
+
+        if (name === "dataNascimento") {
+            if (!value) erroMensagem = "A data de nascimento é obrigatória.";
+            else {
+                const dataSelecionada = new Date(value);
+                const hoje = new Date();
+                if (dataSelecionada > hoje) erroMensagem = "A data de nascimento não pode ser futura.";
+            }
+        }
+
+        if (name === "telefone") {
+            const numerosTel = value.replace(/\D/g, "");
+            if (!numerosTel) erroMensagem = "O telefone é obrigatório.";
+            else if (numerosTel.length < 10 || numerosTel.length > 11) {
+                erroMensagem = "O telefone deve conter 10 (Fixo) ou 11 (Celular) dígitos com DDD.";
+            }
+        }
+
+        // 🚀 NOVA TRAVA: Verifica se a UBS foi selecionada
+        if (name === "unidadeId") {
+            if (!value) erroMensagem = "A seleção da Unidade Básica de Saúde é obrigatória.";
+        }
+
+        setErros((prev) => ({ ...prev, [name]: erroMensagem }));
+        return erroMensagem === "";
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        let valorComMascara = value;
+
+        if (name === "cpf") {
+            valorComMascara = value
+                .replace(/\D/g, "")
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d)/, "$1.$2")
+                .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        } else if (name === "telefone") {
+            valorComMascara = value
+                .replace(/\D/g, "")
+                .replace(/^(\d{2})(\d)/g, "($1) $2")
+                .replace(/(\d)(\d{4})$/, "$1-$2");
+        }
+
+        setFormData((prev) => ({ ...prev, [name]: valorComMascara }));
+
+        if (erros[name]) {
+            validarCampo(name, valorComMascara);
+        }
+    };
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        validarCampo(name, value);
     };
 
     const handleCheckboxChange = (enumValue) => {
@@ -74,10 +157,41 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
         setLoading(true);
         setError("");
 
+        const nomeValido = validarCampo("nome", formData.nome);
+        const cpfValido = validarCampo("cpf", formData.cpf);
+        const dataValida = validarCampo("dataNascimento", formData.dataNascimento);
+        const telValido = validarCampo("telefone", formData.telefone);
+
+        const ubsValida = validarCampo("unidadeId", formData.unidadeId);
+
+        if (!nomeValido || !cpfValido || !dataValida || !telValido || !ubsValida) {
+            setError("Por favor, corrija os erros ou preencha os campos obrigatórios.");
+            setLoading(false);
+            return;
+        }
+
         const dadosTratados = {
-            ...formData,
+            nome: formData.nome,
             cpf: formData.cpf.replace(/\D/g, ""),
+            dataNascimento: formData.dataNascimento,
             telefone: formData.telefone.replace(/\D/g, ""),
+            genero: formData.genero,
+            tipoSanguineo: formData.tipoSanguineo || null,
+            unidadeId: formData.unidadeId ? Number(formData.unidadeId) : null,
+            turmaId: formData.turmaId ? Number(formData.turmaId) : null,
+            condicoesSaude: formData.condicoesSaude,
+
+            encaminhamentos: formData.observacoes
+                ? [
+                      {
+                          dataEncaminhamento: formData.dataEncaminhamento,
+                          motivo: "OUTRO",
+                          status: "PENDENTE",
+                          observacoes: formData.observacoes.trim(),
+                      },
+                  ]
+                : [],
+            avaliacoes: [],
         };
 
         try {
@@ -109,7 +223,6 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
             {error && <div className={styles.errorAlert}>{error}</div>}
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                {/* Linha 1: Nome Completo */}
                 <div className={styles.formGroup}>
                     <label htmlFor="nome" className={styles.label}>
                         Nome Completo
@@ -120,13 +233,14 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                         name="nome"
                         value={formData.nome}
                         onChange={handleChange}
-                        className={styles.input}
+                        onBlur={handleBlur}
+                        className={`${styles.input} ${erros.nome ? styles.inputErro : ""}`}
                         required
                         placeholder="Ex: Maria José da Silva"
                     />
+                    {erros.nome && <span className={styles.erroTexto}>{erros.nome}</span>}
                 </div>
 
-                {/* Linha 2: CPF e Data de Nascimento */}
                 <div className={styles.gridRow}>
                     <div className={styles.formGroup}>
                         <label htmlFor="cpf" className={styles.label}>
@@ -138,11 +252,13 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             name="cpf"
                             value={formData.cpf}
                             onChange={handleChange}
-                            className={styles.input}
+                            onBlur={handleBlur}
+                            className={`${styles.input} ${erros.cpf ? styles.inputErro : ""}`}
                             required
-                            maxLength={11}
-                            placeholder="Ex: 12345678901"
+                            maxLength={14}
+                            placeholder="Ex: 123.456.789-01"
                         />
+                        {erros.cpf && <span className={styles.erroTexto}>{erros.cpf}</span>}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -155,9 +271,11 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             name="dataNascimento"
                             value={formData.dataNascimento}
                             onChange={handleChange}
-                            className={styles.input}
+                            onBlur={handleBlur}
+                            className={`${styles.input} ${erros.dataNascimento ? styles.inputErro : ""}`}
                             required
                         />
+                        {erros.dataNascimento && <span className={styles.erroTexto}>{erros.dataNascimento}</span>}
                     </div>
                 </div>
 
@@ -172,10 +290,12 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                             name="telefone"
                             value={formData.telefone}
                             onChange={handleChange}
-                            className={styles.input}
+                            onBlur={handleBlur}
+                            className={`${styles.input} ${erros.telefone ? styles.inputErro : ""}`}
                             required
-                            placeholder="Ex: 83999887766"
+                            placeholder="Ex: (83) 99988-7766"
                         />
+                        {erros.telefone && <span className={styles.erroTexto}>{erros.telefone}</span>}
                     </div>
 
                     <div className={styles.formGroup}>
@@ -233,7 +353,7 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                         className={styles.select}
                         required
                     >
-                        <option value="">Selecione a UBS de referência do paciente...</option>
+                        <option value="">Selecione a UBS...</option>
                         {unidades.map((ubs) => (
                             <option key={ubs.id} value={ubs.id}>
                                 {ubs.nomeUnidade}
@@ -246,14 +366,59 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                     <label className={styles.label}>Condições de Saúde / Comorbidades</label>
                     <div className={styles.checkboxGrid}>
                         {[
-                            { value: "DIABETES1", label: "Diabetes Tipo 1" },
-                            { value: "DIABETES2", label: "Diabetes Tipo 2" },
-                            { value: "DIABETES3", label: "Diabetes Outros/Gestacional" },
-                            { value: "HIPERTENSAO", label: "Hipertensão" },
+                            { value: "HIPERTENSAO_ARTERIAL", label: "Hipertensão Arterial" },
+                            { value: "INSUFICIENCIA_CARDIACA", label: "Insuficiência Cardíaca" },
+                            { value: "DOENCA_ARTERIAL_CORONARIANA", label: "Doença Arterial Coronariana" },
+                            { value: "POS_INFARTO", label: "Pós-infarto" },
+                            { value: "DOENCA_VASCULAR_PERIFERICA", label: "Doença Vascular Periférica" },
+                            { value: "CARDIOPATIA", label: "Cardiopatia" },
+
+                            { value: "DIABETES", label: "Diabetes" },
                             { value: "OBESIDADE", label: "Obesidade" },
+                            { value: "SOBREPESO", label: "Sobrepeso" },
+                            { value: "SINDROME_METABOLICA", label: "Síndrome Metabólica" },
+                            { value: "DISLIPIDEMIA", label: "Dislipidemia" },
+
+                            { value: "LOMBALGIA", label: "Lombalgia (Dor Lombar)" },
+                            { value: "CERVICALGIA", label: "Cervicalgia (Dor Cervical)" },
+                            { value: "HERNIA_DE_DISCO", label: "Hérnia de Disco" },
+                            { value: "ESCOLIOSE", label: "Escoliose" },
                             { value: "ARTROSE", label: "Artrose" },
+                            { value: "OSTEOPOROSE", label: "Osteoporose" },
+                            { value: "ARTRITE_REUMATOIDE", label: "Artrite Reumatoide" },
                             { value: "FIBROMIALGIA", label: "Fibromialgia" },
-                            { value: "OUTROS", label: "Outros" },
+
+                            { value: "SEQUELA_DE_AVC", label: "Sequela de AVC" },
+                            { value: "DOENCA_DE_PARKINSON", label: "Doença de Parkinson" },
+                            { value: "ESCLEROSE_MULTIPLA", label: "Esclerose Múltipla" },
+                            { value: "NEUROPATIAS_PERIFERICAS", label: "Neuropatias Periféricas" },
+                            {
+                                value: "DEFICIT_DE_EQUILIBRIO_E_COORDENACAO",
+                                label: "Déficit de Equilíbrio e Coordenação",
+                            },
+
+                            { value: "DIFICULDADE_DE_LOCOMOCAO", label: "Dificuldade de Locomoção" },
+                            { value: "FRAQUEZA_MUSCULAR", label: "Fraqueza Muscular" },
+                            { value: "SARCOPENIA", label: "Sarcopenia" },
+                            { value: "RISCO_DE_QUEDAS", label: "Risco de Quedas" },
+                            { value: "LIMITACAO_FUNCIONAL_DO_IDOSO", label: "Limitação Funcional do Idoso" },
+
+                            { value: "ASMA", label: "Asma" },
+                            { value: "DPOC", label: "DPOC (Doença Pulmonar Obstrutiva Crônica)" },
+                            { value: "BRONQUITE_CRONICA", label: "Bronquite Crônica" },
+
+                            { value: "ANSIEDADE", label: "Ansiedade" },
+                            { value: "DEPRESSAO", label: "Depressão" },
+                            { value: "ESTRESSE_CRONICO", label: "Estresse Crônico" },
+                            { value: "TRANSTORNOS_DO_SONO", label: "Transtornos do Sono" },
+
+                            { value: "SEDENTARISMO", label: "Sedentarismo" },
+                            { value: "DOR_CRONICA", label: "Dor Crônica" },
+                            { value: "POS_COVID_COM_LIMITACOES_FISICAS", label: "Pós-COVID com Limitações Físicas" },
+                            { value: "REABILITACAO_POS_CIRURGICA", label: "Reabilitação Pós-cirúrgica" },
+                            { value: "PACIENTE_ONCOLOGICO", label: "Paciente Oncológico" },
+
+                            { value: "OUTRO", label: "Outro" },
                         ].map((item) => (
                             <label key={item.value} className={styles.checkboxLabel}>
                                 <input

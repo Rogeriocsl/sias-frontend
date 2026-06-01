@@ -2,31 +2,35 @@ import { useState, useRef, useEffect, useCallback, createContext, useContext } f
 import styles from "./Menu.module.css";
 
 const MenuContext = createContext(null);
-const useMenu = () => useContext(MenuContext);
 
+function useMenu() {
+    const ctx = useContext(MenuContext);
+    if (!ctx) throw new Error("Componentes de Menu devem estar dentro de <Menu>.");
+    return ctx;
+}
 
 export function Menu({ children, placement = "bottom-start" }) {
     const [open, setOpen] = useState(false);
     const rootRef = useRef(null);
 
+    const close = useCallback(() => setOpen(false), []);
+    const toggle = useCallback(() => setOpen((v) => !v), []);
+
     useEffect(() => {
         if (!open) return;
-        const handleKey = (e) => e.key === "Escape" && setOpen(false);
+
+        const handleKey = (e) => e.key === "Escape" && close();
         const handleClick = (e) => {
-            if (rootRef.current && !rootRef.current.contains(e.target)) {
-                setOpen(false);
-            }
+            if (rootRef.current && !rootRef.current.contains(e.target)) close();
         };
+
         document.addEventListener("keydown", handleKey);
         document.addEventListener("mousedown", handleClick);
         return () => {
             document.removeEventListener("keydown", handleKey);
             document.removeEventListener("mousedown", handleClick);
         };
-    }, [open]);
-
-    const close = useCallback(() => setOpen(false), []);
-    const toggle = useCallback(() => setOpen((v) => !v), []);
+    }, [open, close]);
 
     return (
         <MenuContext.Provider value={{ open, toggle, close, placement }}>
@@ -46,18 +50,21 @@ export function MenuTrigger({ children, showChevron = true, className = "" }) {
             aria-haspopup="menu"
             aria-expanded={open}
             onClick={toggle}
-            className={`${styles.trigger} ${className}`}
+            className={`${styles.trigger} ${className}`.trim()}
         >
             {children}
             {showChevron && (
-                <span className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}>
+                <span className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`.trim()}>
                     <svg
                         viewBox="0 0 24 24"
+                        width={14}
+                        height={14}
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={2.2}
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        aria-hidden="true"
                     >
                         <polyline points="6 9 12 15 18 9" />
                     </svg>
@@ -72,21 +79,20 @@ export function MenuContent({ children, className = "" }) {
     if (!open) return null;
 
     return (
-        <ul role="menu" data-placement={placement} className={`${styles.list} ${className}`}>
+        <ul role="menu" data-placement={placement} className={`${styles.list} ${className}`.trim()}>
             {children}
         </ul>
     );
 }
 
-
 export function MenuItem({ children, icon, shortcut, disabled = false, danger = false, onClick, className = "" }) {
     const { close } = useMenu();
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         if (disabled) return;
         onClick?.();
         close();
-    };
+    }, [disabled, onClick, close]);
 
     const itemClass = [styles.item, danger ? styles.itemDanger : "", disabled ? styles.itemDisabled : "", className]
         .filter(Boolean)
@@ -102,9 +108,17 @@ export function MenuItem({ children, icon, shortcut, disabled = false, danger = 
                 className={itemClass}
                 aria-disabled={disabled}
             >
-                {icon && <span className={styles.itemIcon}>{icon}</span>}
+                {icon && (
+                    <span className={styles.itemIcon} aria-hidden="true">
+                        {icon}
+                    </span>
+                )}
                 <span className={styles.itemLabel}>{children}</span>
-                {shortcut && <span className={styles.itemShortcut}>{shortcut}</span>}
+                {shortcut && (
+                    <span className={styles.itemShortcut} aria-label={`Atalho: ${shortcut}`}>
+                        {shortcut}
+                    </span>
+                )}
             </button>
         </li>
     );
