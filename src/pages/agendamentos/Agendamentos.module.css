@@ -1,0 +1,320 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 0.2s ease-out both;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.pageTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-strong);
+    margin: 0;
+}
+.pageSubtitle {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0;
+}
+
+.btnNovo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: var(--color-brand);
+    color: var(--color-brand-text);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background-color 0.15s,
+        transform 0.12s,
+        box-shadow 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 91, 148, 0.3);
+}
+.btnNovo:hover {
+    background-color: #004471;
+    box-shadow: 0 4px 12px rgba(0, 91, 148, 0.35);
+    transform: translateY(-1px);
+}
+.btnNovo:active {
+    transform: translateY(0);
+}
+.btnNovo:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.filtroWrap {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.filtroPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.filtroPill:hover {
+    background: #f1f5f9;
+    color: var(--color-text-strong);
+}
+.filtroPillAtivo {
+    background: var(--color-brand);
+    color: #fff;
+    border-color: var(--color-brand);
+}
+.filtroCount {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 0 5px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+}
+.filtroPill:not(.filtroPillAtivo) .filtroCount {
+    background: #e2e8f0;
+    color: var(--color-text-muted);
+}
+
+.tableCard {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+.table thead {
+    background-color: #f8fafc;
+}
+.table th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+.table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--color-text-body);
+    vertical-align: middle;
+}
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.table tbody tr {
+    transition: background-color 0.12s;
+}
+.table tbody tr:hover {
+    background-color: rgba(0, 91, 148, 0.03);
+}
+.textCenter {
+    text-align: center;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.statusAgendado {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+.statusRealizado {
+    background: #f0fdf4;
+    color: #15803d;
+}
+.statusCancelado {
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.obs {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    max-width: 200px;
+}
+.vazio {
+    color: #94a3b8;
+}
+
+.actionsGroup {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+.btnEdit,
+.btnDelete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        background-color 0.12s,
+        color 0.12s,
+        border-color 0.12s,
+        transform 0.1s;
+}
+.btnEdit {
+    border: 1px solid #fde047;
+    background-color: #fefce8;
+    color: #a16207;
+}
+.btnEdit:hover {
+    background-color: #ca8a04;
+    color: #fff;
+    border-color: #ca8a04;
+    transform: scale(1.08);
+}
+.btnDelete {
+    border: 1px solid #fca5a5;
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+.btnDelete:hover {
+    background-color: #ef4444;
+    color: #fff;
+    border-color: #ef4444;
+    transform: scale(1.08);
+}
+.btnEdit:active,
+.btnDelete:active {
+    transform: scale(0.97);
+}
+.btnEdit:focus-visible,
+.btnDelete:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.feedback {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+.feedbackError {
+    color: var(--color-error);
+    background: var(--color-error-bg);
+    border-radius: 8px;
+    margin: 1rem;
+    padding: 1rem 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btnNovo {
+        width: 100%;
+        justify-content: center;
+    }
+    .table,
+    .table thead,
+    .table tbody,
+    .table th,
+    .table td,
+    .table tr {
+        display: block;
+    }
+    .table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    .table tr {
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        background-color: var(--color-card);
+        padding: 0.25rem 0;
+    }
+    .table td {
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        position: relative;
+        padding-left: 45%;
+        text-align: right;
+    }
+    .table td:last-child {
+        border-bottom: none;
+    }
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 40%;
+        text-align: left;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+    }
+    .actionsGroup {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .textCenter {
+        text-align: right !important;
+    }
+    .obs {
+        max-width: 100%;
+    }
+}

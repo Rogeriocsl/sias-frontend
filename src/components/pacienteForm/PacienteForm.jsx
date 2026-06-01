@@ -366,14 +366,59 @@ export function PacienteForm({ onVoltar, pacienteId = null }) {
                     <label className={styles.label}>Condições de Saúde / Comorbidades</label>
                     <div className={styles.checkboxGrid}>
                         {[
-                            { value: "DIABETES1", label: "Diabetes Tipo 1" },
-                            { value: "DIABETES2", label: "Diabetes Tipo 2" },
-                            { value: "DIABETES3", label: "Diabetes Outros/Gestacional" },
-                            { value: "HIPERTENSAO", label: "Hipertensão" },
+                            { value: "HIPERTENSAO_ARTERIAL", label: "Hipertensão Arterial" },
+                            { value: "INSUFICIENCIA_CARDIACA", label: "Insuficiência Cardíaca" },
+                            { value: "DOENCA_ARTERIAL_CORONARIANA", label: "Doença Arterial Coronariana" },
+                            { value: "POS_INFARTO", label: "Pós-infarto" },
+                            { value: "DOENCA_VASCULAR_PERIFERICA", label: "Doença Vascular Periférica" },
+                            { value: "CARDIOPATIA", label: "Cardiopatia" },
+
+                            { value: "DIABETES", label: "Diabetes" },
                             { value: "OBESIDADE", label: "Obesidade" },
+                            { value: "SOBREPESO", label: "Sobrepeso" },
+                            { value: "SINDROME_METABOLICA", label: "Síndrome Metabólica" },
+                            { value: "DISLIPIDEMIA", label: "Dislipidemia" },
+
+                            { value: "LOMBALGIA", label: "Lombalgia (Dor Lombar)" },
+                            { value: "CERVICALGIA", label: "Cervicalgia (Dor Cervical)" },
+                            { value: "HERNIA_DE_DISCO", label: "Hérnia de Disco" },
+                            { value: "ESCOLIOSE", label: "Escoliose" },
                             { value: "ARTROSE", label: "Artrose" },
+                            { value: "OSTEOPOROSE", label: "Osteoporose" },
+                            { value: "ARTRITE_REUMATOIDE", label: "Artrite Reumatoide" },
                             { value: "FIBROMIALGIA", label: "Fibromialgia" },
-                            { value: "OUTROS", label: "Outros" },
+
+                            { value: "SEQUELA_DE_AVC", label: "Sequela de AVC" },
+                            { value: "DOENCA_DE_PARKINSON", label: "Doença de Parkinson" },
+                            { value: "ESCLEROSE_MULTIPLA", label: "Esclerose Múltipla" },
+                            { value: "NEUROPATIAS_PERIFERICAS", label: "Neuropatias Periféricas" },
+                            {
+                                value: "DEFICIT_DE_EQUILIBRIO_E_COORDENACAO",
+                                label: "Déficit de Equilíbrio e Coordenação",
+                            },
+
+                            { value: "DIFICULDADE_DE_LOCOMOCAO", label: "Dificuldade de Locomoção" },
+                            { value: "FRAQUEZA_MUSCULAR", label: "Fraqueza Muscular" },
+                            { value: "SARCOPENIA", label: "Sarcopenia" },
+                            { value: "RISCO_DE_QUEDAS", label: "Risco de Quedas" },
+                            { value: "LIMITACAO_FUNCIONAL_DO_IDOSO", label: "Limitação Funcional do Idoso" },
+
+                            { value: "ASMA", label: "Asma" },
+                            { value: "DPOC", label: "DPOC (Doença Pulmonar Obstrutiva Crônica)" },
+                            { value: "BRONQUITE_CRONICA", label: "Bronquite Crônica" },
+
+                            { value: "ANSIEDADE", label: "Ansiedade" },
+                            { value: "DEPRESSAO", label: "Depressão" },
+                            { value: "ESTRESSE_CRONICO", label: "Estresse Crônico" },
+                            { value: "TRANSTORNOS_DO_SONO", label: "Transtornos do Sono" },
+
+                            { value: "SEDENTARISMO", label: "Sedentarismo" },
+                            { value: "DOR_CRONICA", label: "Dor Crônica" },
+                            { value: "POS_COVID_COM_LIMITACOES_FISICAS", label: "Pós-COVID com Limitações Físicas" },
+                            { value: "REABILITACAO_POS_CIRURGICA", label: "Reabilitação Pós-cirúrgica" },
+                            { value: "PACIENTE_ONCOLOGICO", label: "Paciente Oncológico" },
+
+                            { value: "OUTRO", label: "Outro" },
                         ].map((item) => (
                             <label key={item.value} className={styles.checkboxLabel}>
                                 <input

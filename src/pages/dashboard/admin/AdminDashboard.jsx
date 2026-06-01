@@ -82,8 +82,7 @@ export function AdminDashboard({ user, signOut }) {
             <div className={styles.main}>
                 <header className={styles.topbar}>
                     <div>
-                        <h1 className={styles.pageTitle}>Painel Administrativo ⚙️</h1>
-                        <p className={styles.pageSubtitle}>
+                        <p className={styles.pageTitle}>
                             Bem-vindo, <strong>{displayName}</strong>
                         </p>
                     </div>

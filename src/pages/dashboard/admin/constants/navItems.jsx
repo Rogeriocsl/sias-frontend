@@ -11,9 +11,12 @@ import {
 export const NAV_PRINCIPAL = [
     { id: "dashboard", label: "Dashboard", icon: <IconGrid /> },
     { id: "turmas", label: "Turmas", icon: <IconCalendar /> },
+    { id: "avaliacoes", label: "Avaliações", icon: <IconCalendar /> },
+    { id: "agendamentos", label: "Agendamentos", icon: <IconCalendar /> },
     { id: "encaminhamentos", label: "Encaminhamentos", icon: <IconShuffle /> },
     { id: "usuarios", label: "Cadastro de Usuários", icon: <IconUsers /> },
     { id: "pacientes", label: "Cadastro de Pacientes", icon: <IconUsers /> },
+    { id: "unidades", label: "Cadastro de UBSF", icon: <IconFileText /> },
     { id: "relatorios", label: "Relatórios", icon: <IconFileText /> },
 ];
 
