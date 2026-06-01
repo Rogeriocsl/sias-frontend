@@ -49,6 +49,21 @@ const IconTrash = () => (
         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
 );
+const IconSearch = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={15}
+        height={15}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
 
 function classificarImc(imc) {
     if (!imc) return null;
@@ -69,6 +84,7 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
     const [avaliacoes, setAvaliacoes] = useState([]);
     const [pacientes, setPacientes] = useState([]);
     const [pacienteFiltro, setPacienteFiltro] = useState(pacienteIdFixo ?? "");
+    const [busca, setBusca] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [avaliacaoSelecionadaId, setAvaliacaoSelecionadaId] = useState(null);
@@ -80,9 +96,7 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
         try {
             const { data } = await api.get("/api/pacientes");
             setPacientes(data);
-        } catch {
-            // silencioso — lista de pacientes é auxiliar
-        }
+        } catch {}
     }, [pacienteIdFixo]);
 
     const carregarAvaliacoes = useCallback(async () => {
@@ -93,7 +107,7 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
             const { data } = await api.get(rota);
             const lista = Array.isArray(data) ? data : (data.content ?? []);
             setAvaliacoes(lista);
-        } catch (err) {
+        } catch {
             setError("Não foi possível carregar as avaliações. Tente novamente.");
         } finally {
             setLoading(false);
@@ -141,10 +155,23 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
         );
     }
 
+    const termo = busca.toLowerCase().trim();
+    const listagem = termo
+        ? avaliacoes.filter((av) => {
+              const nomePaciente = pacientes.find((p) => p.id === av.pacienteId)?.nome ?? "";
+              return nomePaciente.toLowerCase().includes(termo);
+          })
+        : avaliacoes;
+
     const renderConteudo = () => {
         if (loading) return <div className={styles.feedback}>Buscando avaliações físicas...</div>;
         if (error) return <div className={`${styles.feedback} ${styles.feedbackError}`}>{error}</div>;
-        if (avaliacoes.length === 0) return <div className={styles.feedback}>Nenhuma avaliação registrada.</div>;
+        if (listagem.length === 0)
+            return (
+                <div className={styles.feedback}>
+                    {termo ? `Nenhuma avaliação encontrada para "${busca}".` : "Nenhuma avaliação registrada."}
+                </div>
+            );
 
         return (
             <div className={styles.tableWrapper}>
@@ -163,7 +190,7 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {avaliacoes.map((av) => {
+                        {listagem.map((av) => {
                             const imc = classificarImc(av.imc);
                             return (
                                 <tr key={av.id}>
@@ -237,26 +264,55 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
                 </button>
             </div>
 
-            {!pacienteIdFixo && pacientes.length > 0 && (
-                <div className={styles.filtroWrap}>
-                    <label className={styles.filtroLabel} htmlFor="filtroPaciente">
-                        Filtrar por paciente
-                    </label>
-                    <select
-                        id="filtroPaciente"
-                        className={styles.filtroSelect}
-                        value={pacienteFiltro}
-                        onChange={(e) => setPacienteFiltro(e.target.value)}
-                    >
-                        <option value="">Todos os pacientes</option>
-                        {pacientes.map((p) => (
-                            <option key={p.id} value={p.id}>
-                                {p.nome}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
+            <div className={styles.barraFiltros}>
+                {!pacienteIdFixo && (
+                    <div className={styles.searchWrap}>
+                        <span className={styles.searchIcon}>
+                            <IconSearch />
+                        </span>
+                        <input
+                            type="text"
+                            className={styles.searchInput}
+                            placeholder="Buscar por nome do paciente..."
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
+                        />
+                        {busca && (
+                            <button
+                                className={styles.searchClear}
+                                onClick={() => setBusca("")}
+                                aria-label="Limpar busca"
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {!pacienteIdFixo && pacientes.length > 0 && (
+                    <div className={styles.filtroWrap}>
+                        <label className={styles.filtroLabel} htmlFor="filtroPaciente">
+                            Filtrar por paciente
+                        </label>
+                        <select
+                            id="filtroPaciente"
+                            className={styles.filtroSelect}
+                            value={pacienteFiltro}
+                            onChange={(e) => {
+                                setPacienteFiltro(e.target.value);
+                                setBusca("");
+                            }}
+                        >
+                            <option value="">Todos os pacientes</option>
+                            {pacientes.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                    {p.nome}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+            </div>
 
             <div className={styles.tableCard}>{renderConteudo()}</div>
 
