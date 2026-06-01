@@ -3,6 +3,9 @@ import { Usuarios } from "../../../pages/usuarios/Usuarios";
 import { Pacientes } from "../../../pages/pacientes/Pacientes";
 import { Turmas } from "../../../pages/turmas/Turmas";
 import { Encaminhamentos } from "../../../pages/encaminhamentos/Encaminhamentos";
+import { Unidades } from "../../../pages/unidades/Unidades";
+import { Avaliacoes } from "../../../pages/avaliacoes/Avaliacoes";
+import { Agendamentos } from "../../../pages/agendamentos/Agendamentos";
 
 function Placeholder({ label }) {
     return (
@@ -21,7 +24,6 @@ function Placeholder({ label }) {
     );
 }
 
-
 export function buildPageMap(navigate) {
     return {
         dashboard: <DashboardHome />,
@@ -29,6 +31,9 @@ export function buildPageMap(navigate) {
         encaminhamentos: <Encaminhamentos />,
         usuarios: <Usuarios />,
         pacientes: <Pacientes />,
+        unidades: <Unidades />,
+        avaliacoes: <Avaliacoes />,
+        agendamentos: <Agendamentos />,
         relatorios: <Placeholder label="Tela de Relatórios" />,
         notificacoes: <Placeholder label="Tela de Notificações" />,
         configuracoes: <Placeholder label="Tela de Configurações" />,
