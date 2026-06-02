@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../../services/api";
 import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
 import { ConfirmModal } from "../../components/modal/ConfirmModal";
+import { PacienteDetalhes } from "./PacienteDetalhes";
 import styles from "./Pacientes.module.css";
+
 
 const IconUserPlus = () => (
     <svg
@@ -115,7 +117,8 @@ export function Pacientes() {
     const handleEditar = useCallback((id) => {
         setPacienteSelecionadoId(id);
         setView("cadastro");
-    }, []);
+     
+    },[]);
 
     const handleConfirmarExclusao = useCallback(async () => {
         if (!pacienteParaDeletar) return;
@@ -137,71 +140,6 @@ export function Pacientes() {
         return <PacienteForm pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
     }
 
-    const renderConteudo = () => {
-        if (loading) {
-            return <div className={styles.feedback}>Buscando registros na base do SIAS...</div>;
-        }
-        if (error) {
-            return <div className={`${styles.feedback} ${styles.feedbackError}`}>{error}</div>;
-        }
-        if (pacientes.length === 0) {
-            return <div className={styles.feedback}>Nenhum paciente registrado no momento.</div>;
-        }
-        return (
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Telefone</th>
-                            <th>Gênero</th>
-                            <th>Comorbidades</th>
-                            <th className={styles.textCenter}>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pacientes.map((pac) => (
-                            <tr key={pac.id}>
-                                <td data-label="Nome">
-                                    <strong>{pac.nome}</strong>
-                                </td>
-                                <td data-label="CPF">{pac.cpf}</td>
-                                <td data-label="Telefone">{pac.telefone}</td>
-                                <td data-label="Gênero">
-                                    <span className={styles.genderLabel}>{formatarGenero(pac.genero)}</span>
-                                </td>
-                                <td data-label="Comorbidades">
-                                    <CondicoesBadges condicoes={pac.condicoesSaude} />
-                                </td>
-                                <td data-label="Ações" className={styles.textCenter}>
-                                    <div className={styles.actionsGroup}>
-                                        <button
-                                            className={styles.btnEdit}
-                                            onClick={() => handleEditar(pac.id)}
-                                            title="Editar Paciente"
-                                            aria-label={`Editar ${pac.nome}`}
-                                        >
-                                            <IconEdit />
-                                        </button>
-                                        <button
-                                            className={styles.btnDelete}
-                                            onClick={() => setPacienteParaDeletar({ id: pac.id, nome: pac.nome })}
-                                            title="Remover Registro"
-                                            aria-label={`Remover ${pac.nome}`}
-                                        >
-                                            <IconTrash />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        );
-    };
-
     return (
         <div className={styles.container}>
             <div className={styles.pageHeader}>
@@ -215,6 +153,89 @@ export function Pacientes() {
                 <button className={styles.btnNovo} onClick={() => setView("cadastro")}>
                     <IconUserPlus /> <span>Novo Paciente</span>
                 </button>
+            </div>
+
+            {/* Tabela de Dados */}
+            <div className={styles.tableCard}>
+                {loading ? (
+                    <div className={styles.feedback}>Buscando registros na base do SIAS...</div>
+                ) : pacientes.length === 0 ? (
+                    <div className={styles.feedback}>Nenhum paciente registrado no momento.</div>
+                ) : (
+                    <div className={styles.tableWrapper}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th>Gênero</th>
+                                    <th>Comorbidades</th>
+                                    <th className={styles.textCenter}>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pacientes.map((pac) => (
+                                    <tr key={pac.id}>
+                                        <td data-label="Nome">
+                                            <strong>{pac.nome}</strong>
+                                        </td>
+                                        <td data-label="CPF">{pac.cpf}</td>
+                                        <td data-label="Telefone">{pac.telefone}</td>
+                                        <td data-label="Gênero">
+                                            <span className={styles.genderLabel}>
+                                                {pac.genero === "MASCULINO"
+                                                    ? "Masc"
+                                                    : pac.genero === "FEMININO"
+                                                      ? "Fem"
+                                                      : "Outro"}
+                                            </span>
+                                        </td>
+                                        <td data-label="Comorbidades">
+                                            <div className={styles.condicoesContainer}>
+                                                {pac.condicoesSaude && pac.condicoesSaude.length > 0 ? (
+                                                    pac.condicoesSaude.map((cond, idx) => (
+                                                        <span key={idx} className={styles.condBadge}>
+                                                            {cond.replace("_", " ")}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className={styles.noCond}>Nenhuma</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td data-label="Ações" className={styles.textCenter}>
+                                            <div className={styles.actionsGroup}>
+                                                <button
+                                                    className={styles.btnEdit}
+                                                    onClick={() => handleEditar(pac.id)}
+                                                    title="Editar Paciente"
+                                                >
+                                                    <IconEdit />
+                                                </button>
+
+                                                                                                <button
+                                                    className={styles.btnEdit}
+                                                    onClick={() => handleEditar(pac.id)}
+                                                    title="Ver detalhes"
+                                                >
+                                                    Detalhes
+                                                </button>
+                                                <button
+                                                    className={styles.btnDelete}
+                                                    onClick={() => handleDeletar(pac.id)}
+                                                    title="Remover Registro"
+                                                >
+                                                    <IconTrash />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             <div className={styles.tableCard}>{renderConteudo()}</div>
