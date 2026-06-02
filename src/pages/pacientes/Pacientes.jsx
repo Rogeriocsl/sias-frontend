@@ -213,6 +213,14 @@ export function Pacientes() {
                                                 >
                                                     <IconEdit />
                                                 </button>
+
+                                                                                                <button
+                                                    className={styles.btnEdit}
+                                                    onClick={() => handleEditar(pac.id)}
+                                                    title="Ver detalhes"
+                                                >
+                                                    Detalhes
+                                                </button>
                                                 <button
                                                     className={styles.btnDelete}
                                                     onClick={() => handleDeletar(pac.id)}
