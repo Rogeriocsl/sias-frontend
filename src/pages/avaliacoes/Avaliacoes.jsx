@@ -288,7 +288,7 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
                         )}
                     </div>
                 )}
-
+{/*
                 {!pacienteIdFixo && pacientes.length > 0 && (
                     <div className={styles.filtroWrap}>
                         <label className={styles.filtroLabel} htmlFor="filtroPaciente">
@@ -311,7 +311,7 @@ export function Avaliacoes({ pacienteIdFixo = null }) {
                             ))}
                         </select>
                     </div>
-                )}
+                )} */}
             </div>
 
             <div className={styles.tableCard}>{renderConteudo()}</div>

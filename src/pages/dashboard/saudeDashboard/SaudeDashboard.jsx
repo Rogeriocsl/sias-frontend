@@ -1,14 +1,10 @@
-import { useState } from "react";
-import { Button } from "../../../components/ui/Button";
-import { Menu, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from "../../../components/menu/Menu";
-import {
-    Sidebar,
-    SidebarFooter,
-    SidebarItem,
-    SidebarNav,
-    SidebarSection,
-    SidebarSeparator,
-} from "../../../components/sidebar/Sidebar";
+import { useState, useCallback } from "react";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "../../../components/menu/Menu";
+import { Sidebar, SidebarFooter, SidebarItem, SidebarNav, SidebarSection } from "../../../components/sidebar/Sidebar";
+import { Pacientes } from "../../pacientes/Pacientes";
+import { PacienteDetalhes } from "../../pacientes/PacienteDetalhes";
+import { PacienteForm } from "../../../components/pacienteForm/PacienteForm";
+import { Encaminhamentos } from "../../encaminhamentos/Encaminhamentos";
 import styles from "./SaudeDashboard.module.css";
 
 const IconGrid = () => (
@@ -45,7 +41,7 @@ const IconUsers = () => (
         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
 );
-const IconFileText = () => (
+const IconShuffle = () => (
     <svg
         viewBox="0 0 24 24"
         width={18}
@@ -56,14 +52,14 @@ const IconFileText = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-        <polyline points="10 9 9 9 8 9" />
+        <polyline points="16 3 21 3 21 8" />
+        <line x1="4" y1="20" x2="21" y2="3" />
+        <polyline points="21 16 21 21 16 21" />
+        <line x1="15" y1="15" x2="21" y2="21" />
+        <line x1="4" y1="4" x2="9" y2="9" />
     </svg>
 );
-const IconSettings = () => (
+const IconActivity = () => (
     <svg
         viewBox="0 0 24 24"
         width={18}
@@ -74,11 +70,10 @@ const IconSettings = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
     </svg>
 );
-const IconBell = () => (
+const IconUserPlus = () => (
     <svg
         viewBox="0 0 24 24"
         width={18}
@@ -89,23 +84,10 @@ const IconBell = () => (
         strokeLinecap="round"
         strokeLinejoin="round"
     >
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-);
-const IconUser = () => (
-    <svg
-        viewBox="0 0 24 24"
-        width={18}
-        height={18}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-    >
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <line x1="19" y1="8" x2="19" y2="14" />
+        <line x1="22" y1="11" x2="16" y2="11" />
     </svg>
 );
 const IconLogout = () => (
@@ -124,75 +106,143 @@ const IconLogout = () => (
         <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
 );
+const IconStethoscope = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={18}
+        height={18}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+        <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
+        <circle cx="20" cy="10" r="2" />
+    </svg>
+);
+
+function MedicoHome({ onNavegar }) {
+    const acoes = [
+        { id: "pacientes", icon: <IconUsers />, titulo: "Pacientes", desc: "Consulte, edite e cadastre pacientes" },
+        {
+            id: "novo-paciente",
+            icon: <IconUserPlus />,
+            titulo: "Novo Paciente",
+            desc: "Cadastre um novo paciente no sistema",
+        },
+        {
+            id: "encaminhamentos",
+            icon: <IconShuffle />,
+            titulo: "Encaminhamentos",
+            desc: "Encaminhe pacientes para academia de saúde",
+        },
+        {
+            id: "evolucao",
+            icon: <IconActivity />,
+            titulo: "Consultar Evolução",
+            desc: "Visualize o prontuário e evolução clínica",
+        },
+    ];
+
+    return (
+        <div className={styles.homeWrapper}>
+            <div className={styles.homeBanner}>
+                <div className={styles.homeBannerIcon}>
+                    <IconStethoscope />
+                </div>
+                <div>
+                    <h3 className={styles.homeBannerTitle}>Painel Médico</h3>
+                    <p className={styles.homeBannerDesc}>Selecione uma ação abaixo para começar.</p>
+                </div>
+            </div>
+            <div className={styles.homeGrid}>
+                {acoes.map((a) => (
+                    <button key={a.id} className={styles.homeCard} onClick={() => onNavegar(a.id)}>
+                        <span className={styles.homeCardIcon}>{a.icon}</span>
+                        <span className={styles.homeCardTitle}>{a.titulo}</span>
+                        <span className={styles.homeCardDesc}>{a.desc}</span>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function EvolucaoPaciente() {
+    const [pacienteId, setPacienteId] = useState(null);
+
+    if (pacienteId) {
+        return <PacienteDetalhes pacienteId={pacienteId} onVoltar={() => setPacienteId(null)} />;
+    }
+
+    return <Pacientes modoSelecao onSelecionar={(id) => setPacienteId(id)} />;
+}
+
+function buildPageMap(navigate) {
+    return {
+        dashboard: <MedicoHome onNavegar={navigate} />,
+        pacientes: <Pacientes />,
+        "novo-paciente": <PacienteForm onVoltar={() => navigate("pacientes")} />,
+        encaminhamentos: <Encaminhamentos />,
+        evolucao: <EvolucaoPaciente />,
+    };
+}
+
+const NAV_ITEMS = [
+    { id: "dashboard", label: "Início", icon: <IconGrid /> },
+    { id: "pacientes", label: "Pacientes", icon: <IconUsers /> },
+    { id: "novo-paciente", label: "Novo Paciente", icon: <IconUserPlus /> },
+    { id: "encaminhamentos", label: "Encaminhamentos", icon: <IconShuffle /> },
+    { id: "evolucao", label: "Evolução Clínica", icon: <IconActivity /> },
+];
 
 export function SaudeDashboard({ user, signOut }) {
     const [activePage, setActivePage] = useState("dashboard");
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const navigate = useCallback((page) => setActivePage(page), []);
+    const pageMap = buildPageMap(navigate);
+
+    const displayName = user?.nome || user?.login || "Médico";
+    const avatarChar = (user?.nome?.[0] || user?.login?.[0] || "M").toUpperCase();
+
+    const PAGE_TITLES = {
+        dashboard: "Painel Médico",
+        pacientes: "Pacientes",
+        "novo-paciente": "Novo Paciente",
+        encaminhamentos: "Encaminhamentos",
+        evolucao: "Evolução Clínica",
+    };
 
     return (
         <div className={styles.layout}>
-            <Sidebar defaultCollapsed={false}>
+            <Sidebar collapsed={isCollapsed} onCollapsedChange={setIsCollapsed}>
                 <SidebarNav>
-                    <SidebarSection label="Principal">
-                        <SidebarItem
-                            icon={<IconGrid />}
-                            active={activePage === "dashboard"}
-                            onClick={() => setActivePage("dashboard")}
-                        >
-                            Dashboard
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconUsers />}
-                            active={activePage === "usuarios"}
-                            badge={3}
-                            onClick={() => setActivePage("usuarios")}
-                        >
-                            Usuários
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconFileText />}
-                            active={activePage === "relatorios"}
-                            onClick={() => setActivePage("relatorios")}
-                        >
-                            Relatórios
-                        </SidebarItem>
-                    </SidebarSection>
-
-                    <SidebarSeparator />
-
-                    <SidebarSection label="Sistema">
-                        <SidebarItem
-                            icon={<IconBell />}
-                            active={activePage === "notificacoes"}
-                            badge={12}
-                            onClick={() => setActivePage("notificacoes")}
-                        >
-                            Notificações
-                        </SidebarItem>
-                        <SidebarItem
-                            icon={<IconSettings />}
-                            active={activePage === "configuracoes"}
-                            onClick={() => setActivePage("configuracoes")}
-                        >
-                            Configurações
-                        </SidebarItem>
+                    <SidebarSection label="Medicina">
+                        {NAV_ITEMS.map(({ id, label, icon }) => (
+                            <SidebarItem key={id} icon={icon} active={activePage === id} onClick={() => navigate(id)}>
+                                {label}
+                            </SidebarItem>
+                        ))}
                     </SidebarSection>
                 </SidebarNav>
 
                 <SidebarFooter>
                     <Menu placement="top-start">
                         <MenuTrigger showChevron={false}>
-                            <div className={styles.userTrigger}>
-                                <span className={styles.avatar}>{(user?.login?.[0] || "U").toUpperCase()}</span>
-                                <span className={styles.userInfo}>
-                                    <span className={styles.userName}>{user?.login || "Usuário"}</span>
-                                </span>
+                            <div className={`${styles.userTrigger} ${isCollapsed ? styles.collapsedTrigger : ""}`}>
+                                <span className={styles.avatar}>{avatarChar}</span>
+                                {!isCollapsed && (
+                                    <span className={styles.userInfo}>
+                                        <span className={styles.userName}>{displayName}</span>
+                                        <span className={styles.userRole}>Médico</span>
+                                    </span>
+                                )}
                             </div>
                         </MenuTrigger>
                         <MenuContent>
-                            <MenuLabel>Minha Conta</MenuLabel>
-                            <MenuItem icon={<IconUser />}>Perfil</MenuItem>
-                            <MenuItem icon={<IconSettings />}>Preferências</MenuItem>
-                            <MenuSeparator />
                             <MenuItem icon={<IconLogout />} danger onClick={signOut}>
                                 Sair do Sistema
                             </MenuItem>
@@ -204,18 +254,10 @@ export function SaudeDashboard({ user, signOut }) {
             <div className={styles.main}>
                 <header className={styles.topbar}>
                     <div>
-                        <h1 className={styles.pageTitle}>Dashboard Educador </h1>
-                        <p className={styles.pageSubtitle}>
-                            Bem-vindo, <strong>{user?.login || "Usuário"}</strong>
-                        </p>
+                        <p className={styles.pageTitle}>{PAGE_TITLES[activePage] ?? "Painel Médico"}</p>
                     </div>
                 </header>
-
-                <div className={styles.content}>
-                    <p className={styles.placeholder}>
-                        Página: <strong>{activePage}</strong>
-                    </p>
-                </div>
+                <div className={styles.content}>{pageMap[activePage] ?? null}</div>
             </div>
         </div>
     );

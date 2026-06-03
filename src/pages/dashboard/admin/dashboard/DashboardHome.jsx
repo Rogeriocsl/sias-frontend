@@ -110,7 +110,6 @@ function TabelaOcupacao({ turmas }) {
     );
 }
 
-
 export function DashboardHome() {
     const { estatisticas, loading, error } = useDashboardStats();
 
@@ -127,6 +126,14 @@ export function DashboardHome() {
 
     const evolucao = estatisticas.metricasDeEvolucao;
     const totalAvaliados = evolucao?.totalPacientesAvaliados ?? 0;
+
+    const pacientesSobrepeso =
+        estatisticas.distribuicaoPorComorbidade
+            ?.filter((c) => c.comorbidade === "SOBREPESO" || c.comorbidade === "OBESIDADE")
+            ?.reduce((acc, c) => acc + (c.quantidade ?? 0), 0) ?? 0;
+    const melhoraImc = evolucao?.pacientesComReducaoIMC ?? 0;
+    const baseImc = pacientesSobrepeso || totalAvaliados;
+    const pctMelhoraImc = baseImc > 0 ? Math.round((melhoraImc / baseImc) * 100) : 0;
 
     return (
         <div className={styles.container}>
@@ -152,9 +159,9 @@ export function DashboardHome() {
                 />
                 <StatCard
                     icon="🏆"
-                    title="Taxa de Sucesso (Peso)"
-                    value={totalAvaliados > 0 ? `${evolucao.percentualSucessoPeso}%` : "N/A"}
-                    subtitle={`${totalAvaliados} pacientes reavaliados`}
+                    title="Melhora de IMC (Sobrepeso/Obesidade)"
+                    value={totalAvaliados > 0 ? `${pctMelhoraImc}%` : "N/A"}
+                    subtitle={`${melhoraImc} de ${baseImc} pacientes melhoraram`}
                     variant="success"
                 />
             </div>

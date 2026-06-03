@@ -1,137 +1,284 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
     animation: fadeIn 0.2s ease-out both;
 }
+
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(4px);
+        transform: translateY(6px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
+/* ── Cabeçalho ── */
 .pageHeader {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
     flex-wrap: wrap;
 }
-.btnVoltar {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 1rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    background: transparent;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition:
-        background-color 0.15s,
-        color 0.15s;
-    margin-top: 0.2rem;
-}
-.btnVoltar:hover {
-    background-color: #f1f5f9;
-    color: var(--color-text-strong);
-}
-.btnVoltar:focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
-}
+
 .pageTitle {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--color-text-strong);
     margin: 0;
 }
+
 .pageSubtitle {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--color-text-muted);
-    margin: 0.25rem 0 0;
+    margin: 0.2rem 0 0;
 }
 
+/* ── Botão Voltar ── */
+.btnVoltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: transparent;
+    color: var(--color-brand);
+    border: 1.5px solid var(--color-brand);
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+        background-color 0.15s,
+        color 0.15s,
+        transform 0.12s;
+}
+.btnVoltar:hover {
+    background-color: var(--color-brand);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.btnVoltar:active {
+    transform: translateY(0);
+}
+.btnVoltar:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+/* ── Card do formulário ── */
 .card {
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: 12px;
-    padding: 1.75rem;
+    padding: 1.5rem;
     box-shadow:
         0 1px 3px rgba(0, 0, 0, 0.05),
         0 4px 12px rgba(0, 0, 0, 0.04);
 }
+
+/* ── Alertas ── */
 .alertaErro {
-    background-color: var(--color-error-bg, #fff1f2);
-    border-left: 4px solid var(--color-error, #e11d48);
-    color: var(--color-error, #e11d48);
-    padding: 0.85rem 1.25rem;
+    padding: 0.75rem 1rem;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
     border-radius: 8px;
+    color: #b91c1c;
     font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
+
 .alertaSucesso {
-    background-color: #f0fdf4;
-    border-left: 4px solid #22c55e;
-    color: #15803d;
-    padding: 0.85rem 1.25rem;
+    padding: 0.75rem 1rem;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
     border-radius: 8px;
+    color: #15803d;
     font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
+
+/* ── Formulário ── */
 .form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
+
 .secao {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
 }
+
 .secaoTitulo {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
     text-transform: uppercase;
+    letter-spacing: 0.07em;
     color: var(--color-text-muted);
     margin: 0;
-    padding-bottom: 0.6rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--color-border);
 }
+
 .grid2 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
 }
+
+.grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+}
+
 .campo {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
+
 .label {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
+
 .obrigatorio {
-    color: var(--color-error, #e11d48);
-    margin-left: 2px;
+    color: #ef4444;
 }
+
 .input {
     width: 100%;
-    padding: 0.6rem 0.875rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.875rem;
     color: var(--color-text-body);
-    background-color: var(--color-background, #fff);
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    outline: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    box-sizing: border-box;
+    appearance: none;
+}
+.input::placeholder {
+    color: #94a3b8;
+}
+.input:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.1);
+}
+
+select.input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.25rem;
+    cursor: pointer;
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+}
+
+/* ── Ações ── */
+.acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+.btnCancelar {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        color 0.15s;
+}
+.btnCancelar:hover {
+    border-color: #94a3b8;
+    color: var(--color-text-body);
+}
+
+.btnSalvar {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: var(--color-brand);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s,
+        transform 0.12s,
+        box-shadow 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 91, 148, 0.28);
+}
+.btnSalvar:hover:not(:disabled) {
+    background-color: #004471;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 91, 148, 0.32);
+}
+.btnSalvar:active:not(:disabled) {
+    transform: translateY(0);
+}
+.btnSalvar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── Feedback loading ── */
+.feedback {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* ════════════════════════════════════════
+   Autocomplete de paciente
+════════════════════════════════════════ */
+
+.buscaWrapper {
+    position: relative;
+}
+
+.buscaIcone {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    display: flex;
+    pointer-events: none;
+}
+
+.buscaInput {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.4rem;
+    font-size: 0.875rem;
+    color: var(--color-text-body);
+    background-color: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: 8px;
     outline: none;
@@ -140,87 +287,143 @@
         box-shadow 0.15s;
     box-sizing: border-box;
 }
-.input:focus {
-    border-color: var(--color-brand);
-    box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.12);
-}
-.input::placeholder {
+.buscaInput::placeholder {
     color: #94a3b8;
 }
-.textarea {
-    resize: vertical;
-    min-height: 80px;
-    font-family: inherit;
+.buscaInput:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.1);
 }
 
-.acoes {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--color-border);
-}
-.btnCancelar {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    background: transparent;
+.buscaDropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    cursor: pointer;
-    transition:
-        background-color 0.15s,
-        color 0.15s;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem 0;
+    z-index: 100;
+    max-height: 260px;
+    overflow-y: auto;
 }
-.btnCancelar:hover {
-    background-color: #f1f5f9;
+
+.buscaItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+.buscaItem:hover {
+    background-color: rgba(0, 91, 148, 0.06);
+}
+
+.buscaNome {
+    font-size: 0.875rem;
+    font-weight: 500;
     color: var(--color-text-strong);
 }
-.btnSalvar {
-    padding: 0.6rem 1.5rem;
+
+.buscaCpf {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.buscaVazio {
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+/* Chip do paciente selecionado */
+.pacienteChip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    background-color: rgba(0, 91, 148, 0.06);
+    border: 1px solid rgba(0, 91, 148, 0.2);
+    border-radius: 8px;
+    min-height: 42px;
+}
+
+.chipInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.chipNome {
     font-size: 0.875rem;
     font-weight: 600;
-    background-color: var(--color-brand);
-    color: var(--color-brand-text);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition:
-        background-color 0.15s,
-        transform 0.12s,
-        box-shadow 0.15s;
-    box-shadow: 0 2px 6px rgba(0, 91, 148, 0.3);
+    color: var(--color-text-strong);
 }
-.btnSalvar:hover:not(:disabled) {
-    background-color: #004471;
-    box-shadow: 0 4px 12px rgba(0, 91, 148, 0.35);
-    transform: translateY(-1px);
-}
-.btnSalvar:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-}
-.btnSalvar:focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
-}
-.feedback {
-    text-align: center;
-    padding: 3rem 1.5rem;
+
+.chipCpf {
+    font-size: 0.75rem;
     color: var(--color-text-muted);
-    font-size: 0.875rem;
+}
+
+.chipRemover {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(0, 91, 148, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--color-brand);
+    flex-shrink: 0;
+    transition:
+        background-color 0.12s,
+        color 0.12s;
+}
+.chipRemover:hover {
+    background-color: #ef4444;
+    color: #fff;
 }
 
 @media (max-width: 640px) {
-    .grid2 {
+    .pageHeader {
+        flex-direction: column;
+    }
+    .btnVoltar {
+        width: 100%;
+        justify-content: center;
+    }
+    .grid2,
+    .grid3 {
         grid-template-columns: 1fr;
     }
     .acoes {
-        flex-direction: column-reverse;
+        flex-direction: column;
     }
     .btnCancelar,
     .btnSalvar {
         width: 100%;
+        justify-content: center;
+    }
+    .card {
+        padding: 1rem;
     }
 }

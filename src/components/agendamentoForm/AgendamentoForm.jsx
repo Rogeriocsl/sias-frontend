@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { api } from "../../services/api";
 import styles from "./AgendamentoForm.module.css";
 
@@ -15,6 +15,36 @@ const IconArrowLeft = () => (
     >
         <line x1="19" y1="12" x2="5" y2="12" />
         <polyline points="12 19 5 12 12 5" />
+    </svg>
+);
+const IconSearch = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={15}
+        height={15}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
+const IconX = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={13}
+        height={13}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
 );
 
@@ -37,47 +67,156 @@ function toDatetimeLocal(dataHora) {
     return dataHora.slice(0, 16);
 }
 
+function PacienteBusca({ onSelecionar, selecionadoInicial = null }) {
+    const [query, setQuery] = useState("");
+    const [todos, setTodos] = useState([]);
+    const [aberto, setAberto] = useState(false);
+    const [selecionado, setSelecionado] = useState(selecionadoInicial);
+    const wrapperRef = useRef(null);
+
+    /* Sincroniza quando o pai resolve o objeto (caso edição) */
+    useEffect(() => {
+        if (selecionadoInicial) setSelecionado(selecionadoInicial);
+    }, [selecionadoInicial]);
+
+    useEffect(() => {
+        api.get("/api/pacientes")
+            .then(({ data }) => setTodos(data))
+            .catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setAberto(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const filtrados =
+        query.trim().length >= 1
+            ? todos
+                  .filter((p) => {
+                      const termo = query.toLowerCase();
+                      return (
+                          p.nome.toLowerCase().includes(termo) ||
+                          (p.cpf ?? "").replace(/\D/g, "").includes(termo.replace(/\D/g, ""))
+                      );
+                  })
+                  .slice(0, 8)
+            : [];
+
+    const handleSelecionar = (pac) => {
+        setSelecionado(pac);
+        setQuery("");
+        setAberto(false);
+        onSelecionar(pac.id);
+    };
+
+    const handleLimpar = () => {
+        setSelecionado(null);
+        setQuery("");
+        onSelecionar("");
+    };
+
+    if (selecionado) {
+        return (
+            <div className={styles.pacienteChip}>
+                <div className={styles.chipInfo}>
+                    <span className={styles.chipNome}>{selecionado.nome}</span>
+                    <span className={styles.chipCpf}>{selecionado.cpf}</span>
+                </div>
+                <button type="button" className={styles.chipRemover} onClick={handleLimpar} title="Trocar paciente">
+                    <IconX />
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.buscaWrapper} ref={wrapperRef}>
+            <span className={styles.buscaIcone}>
+                <IconSearch />
+            </span>
+            <input
+                className={styles.buscaInput}
+                type="text"
+                placeholder="Buscar por nome ou CPF…"
+                value={query}
+                onChange={(e) => {
+                    setQuery(e.target.value);
+                    setAberto(true);
+                }}
+                onFocus={() => query.length >= 1 && setAberto(true)}
+                autoComplete="off"
+            />
+            {aberto && filtrados.length > 0 && (
+                <ul className={styles.buscaDropdown}>
+                    {filtrados.map((pac) => (
+                        <li key={pac.id} className={styles.buscaItem} onMouseDown={() => handleSelecionar(pac)}>
+                            <span className={styles.buscaNome}>{pac.nome}</span>
+                            <span className={styles.buscaCpf}>{pac.cpf}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+            {aberto && query.trim().length >= 1 && filtrados.length === 0 && (
+                <div className={styles.buscaVazio}>Nenhum paciente encontrado.</div>
+            )}
+        </div>
+    );
+}
+
 export function AgendamentoForm({ agendamentoId, pacienteIdFixo = null, onVoltar }) {
     const editando = !!agendamentoId;
     const [campos, setCampos] = useState({ ...camposIniciais, pacienteId: pacienteIdFixo ?? "" });
-    const [pacientes, setPacientes] = useState([]);
+    const [pacienteSelecionado, setPacienteSelecionado] = useState(null);
     const [instrutores, setInstrutores] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingDados, setLoadingDados] = useState(false);
     const [erro, setErro] = useState("");
     const [sucesso, setSucesso] = useState("");
 
+    /* Carrega instrutores */
     useEffect(() => {
-        const carregarAuxiliares = async () => {
-            try {
-                const [resPacientes, resUsuarios] = await Promise.all([
-                    pacienteIdFixo ? Promise.resolve({ data: [] }) : api.get("/api/pacientes"),
-                    api.get("/api/usuarios"),
-                ]);
-                if (!pacienteIdFixo) setPacientes(resPacientes.data);
-                setInstrutores(resUsuarios.data);
-            } catch {
-                setErro("Erro ao carregar dados auxiliares.");
-            }
-        };
-        carregarAuxiliares();
-    }, [pacienteIdFixo]);
+        api.get("/api/usuarios")
+            .then(({ data }) => setInstrutores(data))
+            .catch(() => setErro("Erro ao carregar instrutores."));
+    }, []);
 
     useEffect(() => {
         if (!editando) return;
         setLoadingDados(true);
-        api.get(`/api/agendamentos/${agendamentoId}`)
-            .then(({ data }) =>
+
+        const carregarTudo = async () => {
+            try {
+                const [{ data: ag }, { data: pacientes }] = await Promise.all([
+                    api.get(`/api/agendamentos/${agendamentoId}`),
+                    pacienteIdFixo ? Promise.resolve({ data: [] }) : api.get("/api/pacientes"),
+                ]);
+
+                const pacId = ag.pacienteId ?? ag.paciente?.id ?? pacienteIdFixo ?? "";
+
                 setCampos({
-                    pacienteId: data.pacienteId ?? data.paciente?.id ?? pacienteIdFixo ?? "",
-                    instrutorId: data.instrutorId ?? data.instrutor?.id ?? "",
-                    dataHora: toDatetimeLocal(data.dataHora),
-                    status: data.status ?? "AGENDADO",
-                    observacao: data.observacao ?? "",
-                }),
-            )
-            .catch(() => setErro("Não foi possível carregar os dados do agendamento."))
-            .finally(() => setLoadingDados(false));
+                    pacienteId: pacId,
+                    instrutorId: ag.instrutorId ?? ag.instrutor?.id ?? "",
+                    dataHora: toDatetimeLocal(ag.dataHora),
+                    status: ag.status ?? "AGENDADO",
+                    observacao: ag.observacao ?? "",
+                });
+
+                if (!pacienteIdFixo && pacId) {
+                    const obj = pacientes.find((p) => String(p.id) === String(pacId));
+                    if (obj) setPacienteSelecionado(obj);
+                }
+            } catch {
+                setErro("Não foi possível carregar os dados do agendamento.");
+            } finally {
+                setLoadingDados(false);
+            }
+        };
+
+        carregarTudo();
     }, [agendamentoId, editando, pacienteIdFixo]);
 
     const handleChange = (e) => {
@@ -110,7 +249,7 @@ export function AgendamentoForm({ agendamentoId, pacienteIdFixo = null, onVoltar
             const payload = {
                 pacienteId: Number(campos.pacienteId),
                 instrutorId: Number(campos.instrutorId),
-                dataHora: campos.dataHora, // "YYYY-MM-DDTHH:mm" aceito pelo LocalDateTime
+                dataHora: campos.dataHora,
                 status: campos.status,
                 observacao: campos.observacao || null,
             };
@@ -122,6 +261,7 @@ export function AgendamentoForm({ agendamentoId, pacienteIdFixo = null, onVoltar
                 await api.post("/api/agendamentos", payload);
                 setSucesso("Agendamento criado com sucesso!");
                 setCampos({ ...camposIniciais, pacienteId: pacienteIdFixo ?? "" });
+                setPacienteSelecionado(null);
             }
         } catch (err) {
             setErro(err.friendlyMessage || "Erro ao salvar o agendamento. Tente novamente.");
@@ -153,30 +293,21 @@ export function AgendamentoForm({ agendamentoId, pacienteIdFixo = null, onVoltar
                 {sucesso && <div className={styles.alertaSucesso}>{sucesso}</div>}
 
                 <form onSubmit={handleSubmit} className={styles.form} noValidate>
-                    {/* participantes */}
                     <div className={styles.secao}>
                         <h3 className={styles.secaoTitulo}>Participantes</h3>
                         <div className={styles.grid2}>
                             {!pacienteIdFixo && (
                                 <div className={styles.campo}>
-                                    <label className={styles.label} htmlFor="pacienteId">
+                                    <label className={styles.label}>
                                         Paciente <span className={styles.obrigatorio}>*</span>
                                     </label>
-                                    <select
-                                        id="pacienteId"
-                                        name="pacienteId"
-                                        className={styles.input}
-                                        value={campos.pacienteId}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecione um paciente...</option>
-                                        {pacientes.map((p) => (
-                                            <option key={p.id} value={p.id}>
-                                                {p.nome}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <PacienteBusca
+                                        selecionadoInicial={pacienteSelecionado}
+                                        onSelecionar={(id) => {
+                                            setCampos((prev) => ({ ...prev, pacienteId: id }));
+                                            setErro("");
+                                        }}
+                                    />
                                 </div>
                             )}
                             <div className={styles.campo}>

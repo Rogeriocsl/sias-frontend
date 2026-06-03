@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { api } from "../../services/api";
 import styles from "./AvaliacaoForm.module.css";
 
@@ -18,6 +18,39 @@ const IconArrowLeft = () => (
     </svg>
 );
 
+const IconSearch = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={15}
+        height={15}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
+
+const IconX = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={13}
+        height={13}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+);
+
+/* ── Campos iniciais ── */
 const camposIniciais = {
     pacienteId: "",
     peso: "",
@@ -28,6 +61,7 @@ const camposIniciais = {
     observacoes: "",
 };
 
+/* ── Helpers de IMC ── */
 function calcularImcLocal(peso, altura) {
     const p = parseFloat(peso);
     const a = parseFloat(altura);
@@ -44,10 +78,115 @@ function classificarImc(imc) {
     return { label: "Obesidade", classe: "imcObesidade" };
 }
 
+/* ─────────────────────────────────────────
+   Sub-componente: busca de paciente
+───────────────────────────────────────── */
+function PacienteBusca({ onSelecionar }) {
+    const [query, setQuery] = useState("");
+    const [todos, setTodos] = useState([]);
+    const [aberto, setAberto] = useState(false);
+    const [selecionado, setSelecionado] = useState(null);
+    const wrapperRef = useRef(null);
+
+    /* Carrega lista uma vez */
+    useEffect(() => {
+        api.get("/api/pacientes")
+            .then(({ data }) => setTodos(data))
+            .catch(() => {});
+    }, []);
+
+    /* Fecha dropdown ao clicar fora */
+    useEffect(() => {
+        const handler = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                setAberto(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const filtrados =
+        query.trim().length >= 1
+            ? todos
+                  .filter((p) => {
+                      const termo = query.toLowerCase();
+                      return (
+                          p.nome.toLowerCase().includes(termo) ||
+                          (p.cpf ?? "").replace(/\D/g, "").includes(termo.replace(/\D/g, ""))
+                      );
+                  })
+                  .slice(0, 8)
+            : [];
+
+    const handleSelecionar = (pac) => {
+        setSelecionado(pac);
+        setQuery("");
+        setAberto(false);
+        onSelecionar(pac.id);
+    };
+
+    const handleLimpar = () => {
+        setSelecionado(null);
+        onSelecionar("");
+        setQuery("");
+    };
+
+    /* Paciente já selecionado — exibe chip */
+    if (selecionado) {
+        return (
+            <div className={styles.pacienteChip}>
+                <div className={styles.chipInfo}>
+                    <span className={styles.chipNome}>{selecionado.nome}</span>
+                    <span className={styles.chipCpf}>{selecionado.cpf}</span>
+                </div>
+                <button type="button" className={styles.chipRemover} onClick={handleLimpar} title="Trocar paciente">
+                    <IconX />
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.buscaWrapper} ref={wrapperRef}>
+            <span className={styles.buscaIcone}>
+                <IconSearch />
+            </span>
+            <input
+                className={styles.buscaInput}
+                type="text"
+                placeholder="Buscar por nome ou CPF…"
+                value={query}
+                onChange={(e) => {
+                    setQuery(e.target.value);
+                    setAberto(true);
+                }}
+                onFocus={() => query.length >= 1 && setAberto(true)}
+                autoComplete="off"
+            />
+            {aberto && filtrados.length > 0 && (
+                <ul className={styles.buscaDropdown}>
+                    {filtrados.map((pac) => (
+                        <li key={pac.id} className={styles.buscaItem} onMouseDown={() => handleSelecionar(pac)}>
+                            <span className={styles.buscaNome}>{pac.nome}</span>
+                            <span className={styles.buscaCpf}>{pac.cpf}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+            {aberto && query.trim().length >= 1 && filtrados.length === 0 && (
+                <div className={styles.buscaVazio}>Nenhum paciente encontrado.</div>
+            )}
+        </div>
+    );
+}
+
+/* ─────────────────────────────────────────
+   Componente principal
+───────────────────────────────────────── */
 export function AvaliacaoForm({ avaliacaoId, pacienteIdFixo = null, onVoltar }) {
     const editando = !!avaliacaoId;
     const [campos, setCampos] = useState({ ...camposIniciais, pacienteId: pacienteIdFixo ?? "" });
-    const [pacientes, setPacientes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingDados, setLoadingDados] = useState(false);
     const [erro, setErro] = useState("");
@@ -55,13 +194,6 @@ export function AvaliacaoForm({ avaliacaoId, pacienteIdFixo = null, onVoltar }) 
 
     const imcPreview = calcularImcLocal(campos.peso, campos.altura);
     const imcInfo = classificarImc(imcPreview);
-
-    useEffect(() => {
-        if (pacienteIdFixo) return;
-        api.get("/api/pacientes")
-            .then(({ data }) => setPacientes(data))
-            .catch(() => {});
-    }, [pacienteIdFixo]);
 
     useEffect(() => {
         if (!editando) return;
@@ -161,32 +293,25 @@ export function AvaliacaoForm({ avaliacaoId, pacienteIdFixo = null, onVoltar }) 
                 {sucesso && <div className={styles.alertaSucesso}>{sucesso}</div>}
 
                 <form onSubmit={handleSubmit} className={styles.form} noValidate>
+                    {/* Seleção de paciente — só exibe se não for contexto fixo */}
                     {!pacienteIdFixo && (
                         <div className={styles.secao}>
                             <h3 className={styles.secaoTitulo}>Paciente</h3>
                             <div className={styles.campo}>
-                                <label className={styles.label} htmlFor="pacienteId">
+                                <label className={styles.label}>
                                     Paciente <span className={styles.obrigatorio}>*</span>
                                 </label>
-                                <select
-                                    id="pacienteId"
-                                    name="pacienteId"
-                                    className={styles.input}
-                                    value={campos.pacienteId}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Selecione um paciente...</option>
-                                    {pacientes.map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.nome}
-                                        </option>
-                                    ))}
-                                </select>
+                                <PacienteBusca
+                                    onSelecionar={(id) => {
+                                        setCampos((prev) => ({ ...prev, pacienteId: id }));
+                                        setErro("");
+                                    }}
+                                />
                             </div>
                         </div>
                     )}
 
+                    {/* Medidas antropométricas */}
                     <div className={styles.secao}>
                         <h3 className={styles.secaoTitulo}>Medidas antropométricas</h3>
                         <div className={styles.grid3}>

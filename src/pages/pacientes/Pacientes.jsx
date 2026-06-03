@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { api } from "../../services/api";
 import { PacienteForm } from "../../components/pacienteForm/PacienteForm";
 import { ConfirmModal } from "../../components/modal/ConfirmModal";
 import { PacienteDetalhes } from "./PacienteDetalhes";
 import styles from "./Pacientes.module.css";
-
 
 const IconUserPlus = () => (
     <svg
@@ -56,33 +55,53 @@ const IconTrash = () => (
     </svg>
 );
 
-const GENERO_LABEL = {
-    MASCULINO: "Masc",
-    FEMININO: "Fem",
-};
+const IconEye = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={14}
+        height={14}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+    </svg>
+);
 
-function formatarGenero(genero) {
-    return GENERO_LABEL[genero] ?? "Outro";
-}
+const IconSearch = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={16}
+        height={16}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
 
-function formatarCondicao(cond) {
-    return cond.replace(/_/g, " ");
-}
-
-function CondicoesBadges({ condicoes }) {
-    if (!condicoes?.length) {
-        return <span className={styles.noCond}>Nenhuma</span>;
-    }
-    return (
-        <div className={styles.condicoesContainer}>
-            {condicoes.map((cond, idx) => (
-                <span key={idx} className={styles.condBadge}>
-                    {formatarCondicao(cond)}
-                </span>
-            ))}
-        </div>
-    );
-}
+const IconX = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={14}
+        height={14}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+);
 
 export function Pacientes() {
     const [view, setView] = useState("lista");
@@ -90,8 +109,9 @@ export function Pacientes() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [pacienteSelecionadoId, setPacienteSelecionadoId] = useState(null);
-    const [pacienteParaDeletar, setPacienteParaDeletar] = useState(null); // objeto { id, nome }
+    const [pacienteParaDeletar, setPacienteParaDeletar] = useState(null);
     const [loadingDelete, setLoadingDelete] = useState(false);
+    const [search, setSearch] = useState("");
 
     const carregarPacientes = useCallback(async () => {
         setLoading(true);
@@ -114,11 +134,30 @@ export function Pacientes() {
         }
     }, [view, carregarPacientes]);
 
+    /* Filtro de busca — nome, CPF ou comorbidade */
+    const pacientesFiltrados = useMemo(() => {
+        const termo = search.trim().toLowerCase();
+        if (!termo) return pacientes;
+        return pacientes.filter((p) => {
+            const nomeCpf = `${p.nome} ${p.cpf}`.toLowerCase();
+            const conds = (p.condicoesSaude ?? []).join(" ").toLowerCase().replace(/_/g, " ");
+            return nomeCpf.includes(termo) || conds.includes(termo);
+        });
+    }, [pacientes, search]);
+
     const handleEditar = useCallback((id) => {
         setPacienteSelecionadoId(id);
         setView("cadastro");
-     
-    },[]);
+    }, []);
+
+    const handleVerDetalhes = useCallback((id) => {
+        setPacienteSelecionadoId(id);
+        setView("detalhes");
+    }, []);
+
+    const handleDeletar = useCallback((pac) => {
+        setPacienteParaDeletar({ id: pac.id, nome: pac.nome });
+    }, []);
 
     const handleConfirmarExclusao = useCallback(async () => {
         if (!pacienteParaDeletar) return;
@@ -136,31 +175,71 @@ export function Pacientes() {
         }
     }, [pacienteParaDeletar, carregarPacientes]);
 
+    /* ── Sub-views ── */
     if (view === "cadastro") {
         return <PacienteForm pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
     }
+    if (view === "detalhes") {
+        return <PacienteDetalhes pacienteId={pacienteSelecionadoId} onVoltar={() => setView("lista")} />;
+    }
 
+    /* ── Render principal ── */
     return (
         <div className={styles.container}>
+            {/* Cabeçalho */}
             <div className={styles.pageHeader}>
                 <div>
-                    <h2 className={styles.pageTitle}>Gerenciamento de Pacientes 👥</h2>
+                    <h2 className={styles.pageTitle}>Pacientes</h2>
                     <p className={styles.pageSubtitle}>
-                        Consulte históricos clínicos, gerencie prontuários e acompanhe a evolução de saúde da
-                        comunidade.
+                        Prontuários, históricos clínicos e acompanhamento de saúde da comunidade.
                     </p>
                 </div>
                 <button className={styles.btnNovo} onClick={() => setView("cadastro")}>
-                    <IconUserPlus /> <span>Novo Paciente</span>
+                    <IconUserPlus />
+                    <span>Novo Paciente</span>
                 </button>
             </div>
 
-            {/* Tabela de Dados */}
+            {/* Barra de busca + contador */}
+            <div className={styles.toolbar}>
+                <div className={styles.searchWrapper}>
+                    <span className={styles.searchIcon}>
+                        <IconSearch />
+                    </span>
+                    <input
+                        className={styles.searchInput}
+                        type="text"
+                        placeholder="Buscar por nome, CPF ou comorbidade…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    {search && (
+                        <button className={styles.searchClear} onClick={() => setSearch("")} title="Limpar busca">
+                            <IconX />
+                        </button>
+                    )}
+                </div>
+                {!loading && (
+                    <span className={styles.counter}>
+                        {pacientesFiltrados.length} de {pacientes.length} paciente{pacientes.length !== 1 ? "s" : ""}
+                    </span>
+                )}
+            </div>
+
+            {/* Erro global */}
+            {error && <div className={styles.errorBanner}>{error}</div>}
+
+            {/* Tabela */}
             <div className={styles.tableCard}>
                 {loading ? (
-                    <div className={styles.feedback}>Buscando registros na base do SIAS...</div>
-                ) : pacientes.length === 0 ? (
-                    <div className={styles.feedback}>Nenhum paciente registrado no momento.</div>
+                    <div className={styles.feedback}>
+                        <span className={styles.spinner} />
+                        Buscando registros na base do SIAS…
+                    </div>
+                ) : pacientesFiltrados.length === 0 ? (
+                    <div className={styles.feedback}>
+                        {search ? `Nenhum resultado para "${search}".` : "Nenhum paciente registrado no momento."}
+                    </div>
                 ) : (
                     <div className={styles.tableWrapper}>
                         <table className={styles.table}>
@@ -175,15 +254,17 @@ export function Pacientes() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {pacientes.map((pac) => (
+                                {pacientesFiltrados.map((pac) => (
                                     <tr key={pac.id}>
                                         <td data-label="Nome">
                                             <strong>{pac.nome}</strong>
                                         </td>
                                         <td data-label="CPF">{pac.cpf}</td>
-                                        <td data-label="Telefone">{pac.telefone}</td>
+                                        <td data-label="Telefone">{pac.telefone ?? "—"}</td>
                                         <td data-label="Gênero">
-                                            <span className={styles.genderLabel}>
+                                            <span
+                                                className={`${styles.genderBadge} ${pac.genero === "MASCULINO" ? styles.masc : pac.genero === "FEMININO" ? styles.fem : ""}`}
+                                            >
                                                 {pac.genero === "MASCULINO"
                                                     ? "Masc"
                                                     : pac.genero === "FEMININO"
@@ -193,10 +274,10 @@ export function Pacientes() {
                                         </td>
                                         <td data-label="Comorbidades">
                                             <div className={styles.condicoesContainer}>
-                                                {pac.condicoesSaude && pac.condicoesSaude.length > 0 ? (
+                                                {pac.condicoesSaude?.length > 0 ? (
                                                     pac.condicoesSaude.map((cond, idx) => (
                                                         <span key={idx} className={styles.condBadge}>
-                                                            {cond.replace("_", " ")}
+                                                            {cond.replace(/_/g, " ")}
                                                         </span>
                                                     ))
                                                 ) : (
@@ -207,24 +288,23 @@ export function Pacientes() {
                                         <td data-label="Ações" className={styles.textCenter}>
                                             <div className={styles.actionsGroup}>
                                                 <button
+                                                    className={styles.btnDetails}
+                                                    onClick={() => handleVerDetalhes(pac.id)}
+                                                    title="Ver prontuário"
+                                                >
+                                                    <IconEye />
+                                                </button>
+                                                <button
                                                     className={styles.btnEdit}
                                                     onClick={() => handleEditar(pac.id)}
-                                                    title="Editar Paciente"
+                                                    title="Editar paciente"
                                                 >
                                                     <IconEdit />
                                                 </button>
-
-                                                                                                <button
-                                                    className={styles.btnEdit}
-                                                    onClick={() => handleEditar(pac.id)}
-                                                    title="Ver detalhes"
-                                                >
-                                                    Detalhes
-                                                </button>
                                                 <button
                                                     className={styles.btnDelete}
-                                                    onClick={() => handleDeletar(pac.id)}
-                                                    title="Remover Registro"
+                                                    onClick={() => handleDeletar(pac)}
+                                                    title="Remover registro"
                                                 >
                                                     <IconTrash />
                                                 </button>
@@ -237,8 +317,6 @@ export function Pacientes() {
                     </div>
                 )}
             </div>
-
-            <div className={styles.tableCard}>{renderConteudo()}</div>
 
             <ConfirmModal
                 isOpen={!!pacienteParaDeletar}

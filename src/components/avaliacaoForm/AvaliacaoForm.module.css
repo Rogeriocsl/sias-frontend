@@ -265,3 +265,145 @@
         width: 100%;
     }
 }
+
+.buscaWrapper {
+    position: relative;
+}
+
+.buscaIcone {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    display: flex;
+    pointer-events: none;
+}
+
+.buscaInput {
+    width: 100%;
+    padding: 0.55rem 1rem 0.55rem 2.4rem;
+    font-size: 0.875rem;
+    color: var(--color-text-body);
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    outline: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    box-sizing: border-box;
+}
+.buscaInput::placeholder {
+    color: #94a3b8;
+}
+.buscaInput:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.1);
+}
+
+.buscaDropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem 0;
+    z-index: 100;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.buscaItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+.buscaItem:hover {
+    background-color: rgba(0, 91, 148, 0.06);
+}
+
+.buscaNome {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-strong);
+}
+
+.buscaCpf {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.buscaVazio {
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.pacienteChip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    background-color: rgba(0, 91, 148, 0.06);
+    border: 1px solid rgba(0, 91, 148, 0.2);
+    border-radius: 8px;
+}
+
+.chipInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.chipNome {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-strong);
+}
+
+.chipCpf {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.chipRemover {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(0, 91, 148, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--color-brand);
+    flex-shrink: 0;
+    transition:
+        background-color 0.12s,
+        color 0.12s;
+}
+.chipRemover:hover {
+    background-color: #ef4444;
+    color: #fff;
+}

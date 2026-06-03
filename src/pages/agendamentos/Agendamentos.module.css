@@ -318,3 +318,95 @@
         max-width: 100%;
     }
 }
+/* ── Cole este bloco no final do Agendamentos.module.css ── */
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.searchWrapper {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 480px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    display: flex;
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.55rem 2.5rem 0.55rem 2.4rem;
+    font-size: 0.875rem;
+    color: var(--color-text-body);
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    outline: none;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    box-sizing: border-box;
+}
+.searchInput::placeholder {
+    color: #94a3b8;
+}
+.searchInput:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(0, 91, 148, 0.1);
+}
+
+.searchClear {
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: #e2e8f0;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #64748b;
+    transition:
+        background-color 0.12s,
+        color 0.12s;
+}
+.searchClear:hover {
+    background: #cbd5e1;
+    color: #1e293b;
+}
+
+.counter {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+@media (max-width: 640px) {
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .searchWrapper {
+        max-width: 100%;
+    }
+    .counter {
+        margin-left: 0;
+        text-align: right;
+    }
+}

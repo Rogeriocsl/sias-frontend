@@ -3,17 +3,17 @@
     display: inline-block;
     font-family: var(--font-family, sans-serif);
 
-    --menu-bg: (--background-image-sias-bg);
-    --menu-border: #e2e8f0;
-    --menu-item-color: #005b94;
-    --menu-item-hover-bg: (--background-image-sias-bg);
-    --menu-item-hover-color: #008da5;
-    --menu-accent: #6366f1;
-    --menu-separator-color: #008da5;
-    --menu-section-label-color: #475569;
-    --menu-shortcut-color: #64748b;
-    --menu-danger-color: #f87171;
-    --menu-danger-hover-bg: rgba(248, 113, 113, 0.08);
+    --menu-bg: var(--color-card);
+    --menu-border: var(--color-border);
+    --menu-item-color: var(--color-text-body);
+    --menu-item-hover-bg: rgba(0, 91, 148, 0.06);
+    --menu-item-hover-color: var(--color-brand);
+    --menu-accent: var(--color-brand);
+    --menu-separator-color: var(--color-border);
+    --menu-section-label-color: var(--color-text-muted);
+    --menu-shortcut-color: var(--color-text-muted);
+    --menu-danger-color: #ef4444;
+    --menu-danger-hover-bg: rgba(239, 68, 68, 0.08);
 }
 
 .trigger {
@@ -38,7 +38,7 @@
 .list {
     position: absolute;
     z-index: 999;
-    min-width: 190px;
+    min-width: 180px;
     padding: 0.35rem;
     margin: 0;
     list-style: none;
@@ -46,8 +46,8 @@
     border: 1px solid var(--menu-border);
     border-radius: 10px;
     box-shadow:
-        0 10px 15px -3px rgba(0, 0, 0, 0.3),
-        0 4px 6px -4px rgba(0, 0, 0, 0.3);
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -4px rgba(0, 0, 0, 0.08);
     animation: menuIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     transform-origin: var(--menu-origin, top left);
 }
@@ -174,6 +174,7 @@
     height: 14px;
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .chevronOpen {
     transform: rotate(180deg);
 }

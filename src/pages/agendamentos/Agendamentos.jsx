@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { api } from "../../services/api";
 import { AgendamentoForm } from "../../components/agendamentoForm/AgendamentoForm";
 import { ConfirmModal } from "../../components/modal/ConfirmModal";
@@ -49,6 +49,36 @@ const IconTrash = () => (
         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
 );
+const IconSearch = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={15}
+        height={15}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+);
+const IconX = () => (
+    <svg
+        viewBox="0 0 24 24"
+        width={13}
+        height={13}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+);
 
 const STATUS_CONFIG = {
     AGENDADO: { label: "Agendado", classe: "statusAgendado" },
@@ -77,13 +107,13 @@ export function Agendamentos({ pacienteIdFixo = null }) {
     const [agendamentoParaDeletar, setAgendamentoParaDeletar] = useState(null);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [filtroStatus, setFiltroStatus] = useState("");
+    const [search, setSearch] = useState("");
 
     const carregarAgendamentos = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
             const { data } = await api.get("/api/agendamentos");
-
             const normalizado = data.map((a) => ({
                 id: a.id,
                 nomePaciente: a.nomePaciente ?? a.paciente?.nome ?? `#${a.pacienteId ?? ""}`,
@@ -111,6 +141,23 @@ export function Agendamentos({ pacienteIdFixo = null }) {
             setAgendamentoSelecionadoId(null);
         }
     }, [view, carregarAgendamentos]);
+
+    const listagem = useMemo(() => {
+        let resultado = filtroStatus ? agendamentos.filter((a) => a.status === filtroStatus) : agendamentos;
+
+        const termo = search.trim().toLowerCase();
+        if (termo) {
+            resultado = resultado.filter((a) => {
+                return (
+                    a.nomePaciente.toLowerCase().includes(termo) ||
+                    a.nomeInstrutor.toLowerCase().includes(termo) ||
+                    (a.observacao ?? "").toLowerCase().includes(termo) ||
+                    formatarDataHora(a.dataHora).includes(termo)
+                );
+            });
+        }
+        return resultado;
+    }, [agendamentos, filtroStatus, search]);
 
     const handleEditar = useCallback((id) => {
         setAgendamentoSelecionadoId(id);
@@ -142,12 +189,18 @@ export function Agendamentos({ pacienteIdFixo = null }) {
         );
     }
 
-    const listagem = filtroStatus ? agendamentos.filter((a) => a.status === filtroStatus) : agendamentos;
-
     const renderConteudo = () => {
         if (loading) return <div className={styles.feedback}>Buscando agendamentos...</div>;
         if (error) return <div className={`${styles.feedback} ${styles.feedbackError}`}>{error}</div>;
-        if (listagem.length === 0) return <div className={styles.feedback}>Nenhum agendamento encontrado.</div>;
+        if (listagem.length === 0) {
+            return (
+                <div className={styles.feedback}>
+                    {search || filtroStatus
+                        ? "Nenhum agendamento encontrado para os filtros aplicados."
+                        : "Nenhum agendamento cadastrado."}
+                </div>
+            );
+        }
 
         return (
             <div className={styles.tableWrapper}>
@@ -229,6 +282,31 @@ export function Agendamentos({ pacienteIdFixo = null }) {
                 </button>
             </div>
 
+            <div className={styles.toolbar}>
+                <div className={styles.searchWrapper}>
+                    <span className={styles.searchIcon}>
+                        <IconSearch />
+                    </span>
+                    <input
+                        className={styles.searchInput}
+                        type="text"
+                        placeholder="Buscar por paciente, instrutor ou observação…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    {search && (
+                        <button className={styles.searchClear} onClick={() => setSearch("")} title="Limpar busca">
+                            <IconX />
+                        </button>
+                    )}
+                </div>
+                {!loading && (
+                    <span className={styles.counter}>
+                        {listagem.length} de {agendamentos.length} agendamento{agendamentos.length !== 1 ? "s" : ""}
+                    </span>
+                )}
+            </div>
+
             <div className={styles.filtroWrap}>
                 {["", "AGENDADO", "REALIZADO", "CANCELADO"].map((s) => (
                     <button
@@ -237,11 +315,9 @@ export function Agendamentos({ pacienteIdFixo = null }) {
                         onClick={() => setFiltroStatus(s)}
                     >
                         {s === "" ? "Todos" : STATUS_CONFIG[s].label}
-                        {s !== "" && (
-                            <span className={styles.filtroCount}>
-                                {agendamentos.filter((a) => a.status === s).length}
-                            </span>
-                        )}
+                        <span className={styles.filtroCount}>
+                            {s === "" ? agendamentos.length : agendamentos.filter((a) => a.status === s).length}
+                        </span>
                     </button>
                 ))}
             </div>

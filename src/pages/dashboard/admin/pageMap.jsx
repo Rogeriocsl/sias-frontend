@@ -34,8 +34,5 @@ export function buildPageMap(navigate) {
         unidades: <Unidades />,
         avaliacoes: <Avaliacoes />,
         agendamentos: <Agendamentos />,
-        relatorios: <Placeholder label="Tela de Relatórios" />,
-        notificacoes: <Placeholder label="Tela de Notificações" />,
-        configuracoes: <Placeholder label="Tela de Configurações" />,
     };
 }

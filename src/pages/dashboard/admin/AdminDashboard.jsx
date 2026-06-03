@@ -1,16 +1,9 @@
 import { useState, useCallback } from "react";
-import {
-    Sidebar,
-    SidebarNav,
-    SidebarSection,
-    SidebarItem,
-    SidebarSeparator,
-    SidebarFooter,
-} from "../../../components/sidebar/Sidebar";
-import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator, MenuLabel } from "../../../components/menu/Menu";
-import { NAV_PRINCIPAL, NAV_SISTEMA } from "./constants/navItems";
+import { Sidebar, SidebarNav, SidebarSection, SidebarItem, SidebarFooter } from "../../../components/sidebar/Sidebar";
+import { Menu, MenuTrigger, MenuContent, MenuItem } from "../../../components/menu/Menu";
+import { NAV_PRINCIPAL } from "./constants/navItems";
 import { buildPageMap } from "./pageMap";
-import { IconUser, IconSettings, IconLogout } from "./icons/DashboardIcons";
+import { IconLogout } from "./icons/DashboardIcons";
 import styles from "./AdminDashboard.module.css";
 
 export function AdminDashboard({ user, signOut }) {
@@ -18,7 +11,6 @@ export function AdminDashboard({ user, signOut }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const navigate = useCallback((page) => setActivePage(page), []);
-
     const pageMap = buildPageMap(navigate);
 
     const displayName = user?.nome || user?.login || "Usuário";
@@ -31,22 +23,6 @@ export function AdminDashboard({ user, signOut }) {
                     <SidebarSection label="Principal">
                         {NAV_PRINCIPAL.map(({ id, label, icon }) => (
                             <SidebarItem key={id} icon={icon} active={activePage === id} onClick={() => navigate(id)}>
-                                {label}
-                            </SidebarItem>
-                        ))}
-                    </SidebarSection>
-
-                    <SidebarSeparator />
-
-                    <SidebarSection label="Sistema">
-                        {NAV_SISTEMA.map(({ id, label, icon, badge }) => (
-                            <SidebarItem
-                                key={id}
-                                icon={icon}
-                                active={activePage === id}
-                                badge={badge}
-                                onClick={() => navigate(id)}
-                            >
                                 {label}
                             </SidebarItem>
                         ))}
@@ -67,10 +43,6 @@ export function AdminDashboard({ user, signOut }) {
                             </div>
                         </MenuTrigger>
                         <MenuContent>
-                            <MenuLabel>Minha Conta</MenuLabel>
-                            <MenuItem icon={<IconUser />}>Perfil</MenuItem>
-                            <MenuItem icon={<IconSettings />}>Preferências</MenuItem>
-                            <MenuSeparator />
                             <MenuItem icon={<IconLogout />} danger onClick={signOut}>
                                 Sair do Sistema
                             </MenuItem>
